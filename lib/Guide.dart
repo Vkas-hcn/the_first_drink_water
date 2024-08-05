@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:the_first_drink_water/Home.dart';
+import 'package:the_first_drink_water/StartPaper.dart';
+
+import 'MainApp.dart';
 
 class Guide extends StatelessWidget {
   const Guide({super.key});
@@ -29,12 +33,17 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 10),
+      duration: const Duration(seconds: 2),
     );
     startProgress();
+    _controller.addListener(() {
+      if (_controller.isCompleted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) =>  MainApp()),
+        );
+      }
+    });
   }
-
-
 
   @override
   void dispose() {
@@ -45,6 +54,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   void startProgress() {
     _controller.forward();
   }
+
   void stopProgress() {
     _controller.stop();
   }
@@ -121,13 +131,13 @@ class CustomProgressIndicator extends StatelessWidget {
           alignment: Alignment.centerLeft,
           children: [
             Container(
-                width: 300,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: Color(0x33000000), // Background color #33000000
-                  borderRadius: BorderRadius.circular(10),
-                ),
+              width: 300,
+              height: 12,
+              decoration: BoxDecoration(
+                color: Color(0x33000000), // Background color #33000000
+                borderRadius: BorderRadius.circular(10),
               ),
+            ),
             Container(
               width: 300 * controller.value,
               height: 12,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:the_first_drink_water/Guide.dart';
+import 'package:the_first_drink_water/StartPaper.dart';
+import 'package:the_first_drink_water/utils/LocalStorage.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalStorage().init();
   runApp(const MyApp());
 }
 
@@ -28,17 +32,21 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
       pageToHome();
     });
   }
 
   void pageToHome() {
+    String? stringValue =
+        LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String?;
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Guide()),
-            (route) => route == null);
+        MaterialPageRoute(
+            builder: (context) =>
+            ((stringValue!=null && stringValue.isNotEmpty) ? const Guide() : const StartPaper())),
+        (route) => route == null);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -23,10 +23,14 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  final netController = TextEditingController();
+  final TextEditingController _unameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    netController.addListener(showCreteBut);
+
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 10),
@@ -34,17 +38,21 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     startProgress();
   }
 
-
-
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+    netController.removeListener(showCreteBut);
+  }
+
+  void showCreteBut() async {
+    netController.text.trim();
   }
 
   void startProgress() {
     _controller.forward();
   }
+
   void stopProgress() {
     _controller.stop();
   }
@@ -62,37 +70,150 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     return Scaffold(
       body: WillPopScope(
         onWillPop: () async => false,
-        child: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/image/bg_start.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Stack(
-            children: [
+        child: Column(
+          children: [
+            Stack(alignment: Alignment.topCenter, children: [
+              Image.asset('assets/image/bg_setting_top.webp'),
               Padding(
-                padding: const EdgeInsets.only(top: 161, left: 39),
-                child: SizedBox(
-                  width: 78,
-                  height: 78,
-                  child: Image.asset('assets/image/ic_start_logo.webp'),
-                ),
+                padding: const EdgeInsets.only(top: 50.0),
+                child: Image.asset(width: 31, height: 24, 'assets/image/ic_me.webp'),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 70, right: 40, left: 40),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                padding: const EdgeInsets.only(top: 110.0,left: 20,right: 20),
+                child: Image.asset( 'assets/image/bg_setting_mid_2.png'),
+              ),
+            ]),
+
+
+        Padding(
+              padding: const EdgeInsets.only(
+                  left: 20, right: 20, top: 12, bottom: 6),
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: const Color(0xFF47B96D),
+                    width: 2.0,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Row(
                     children: [
-                      CustomProgressIndicator(controller: _controller),
+                      const Text(
+                        'Share',
+                        style: TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 14,
+                        ),
+                      ),
+                      const Spacer(),
+                      Image.asset(
+                          width: 20, height: 20, 'assets/image/ic_be.webp')
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: const Color(0xFF47B96D),
+                    width: 2.0,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Comment',
+                        style: TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 14,
+                        ),
+                      ),
+                      const Spacer(),
+                      Image.asset(
+                          width: 20, height: 20, 'assets/image/ic_be.webp')
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: const Color(0xFF47B96D),
+                    width: 2.0,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'User agreement',
+                        style: TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 14,
+                        ),
+                      ),
+                      const Spacer(),
+                      Image.asset(
+                          width: 20, height: 20, 'assets/image/ic_be.webp')
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: const Color(0xFF47B96D),
+                    width: 2.0,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Privacy Policy',
+                        style: TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 14,
+                        ),
+                      ),
+                      const Spacer(),
+                      Image.asset(
+                          width: 20, height: 20, 'assets/image/ic_be.webp')
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -121,13 +242,13 @@ class CustomProgressIndicator extends StatelessWidget {
           alignment: Alignment.centerLeft,
           children: [
             Container(
-                width: 300,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: Color(0x33000000), // Background color #33000000
-                  borderRadius: BorderRadius.circular(10),
-                ),
+              width: 300,
+              height: 12,
+              decoration: BoxDecoration(
+                color: Color(0x33000000), // Background color #33000000
+                borderRadius: BorderRadius.circular(10),
               ),
+            ),
             Container(
               width: 300 * controller.value,
               height: 12,

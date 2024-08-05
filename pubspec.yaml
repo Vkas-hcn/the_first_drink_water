@@ -65,3 +65,28 @@ flutter:
     - assets/ic_app_logo.jpg
     - assets/image/bg_start.jpg
     - assets/image/ic_start_logo.webp
+    - assets/image/bg_setting.webp
+    - assets/image/ic_panda_drink.webp
+    - assets/image/bg_but.webp
+    - assets/image/ic_delete.webp
+    - assets/image/ic_setting_2.webp
+    - assets/image/ic_bmi_2.webp
+    - assets/image/ic_home_1.webp
+    - assets/image/ic_water_droplet.webp
+    - assets/image/ic_edit.webp
+    - assets/image/ic_clock.webp
+    - assets/image/ic_arw_1.webp
+    - assets/image/ic_arw_2.webp
+    - assets/image/ic_add.webp
+    - assets/image/ic_home_logo.webp
+    - assets/image/ic_panda_drink.webp
+    - assets/image/ic_setting_1.webp
+    - assets/image/ic_home_2.webp
+    - assets/image/ic_bmi_1.webp
+    - assets/image/bg_setting_mid.webp
+    - assets/image/bg_setting_mid_2.png
+    - assets/image/ic_be.webp
+    - assets/image/ic_me.webp
+    - assets/image/bg_setting_top.webp
+    - assets/image/ic_back.webp
+    - assets/image/ic_reult_logo.webp

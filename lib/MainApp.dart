@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-
 import 'BMIPage.dart';
 import 'Home.dart';
 import 'SettingPaper.dart';
-import 'StartPaper.dart';
 
 class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: MainPage(),
     );
   }
@@ -37,12 +31,13 @@ class _MainPageState extends State<MainPage> {
       _selectedIndex = index;
     });
   }
+  bool get shouldShowBottomNavigationBar => _selectedIndex < 3; // 假设 ResultPage 不显示底部导航
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: shouldShowBottomNavigationBar?BottomNavigationBar(
         backgroundColor: const Color(0xFF47B96D),
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -80,7 +75,7 @@ class _MainPageState extends State<MainPage> {
         selectedItemColor: Colors.white,
         unselectedItemColor: const Color(0x80FFFFFF),
         onTap: _onItemTapped,
-      ),
+      ):null,
     );
   }
 }

@@ -3,12 +3,13 @@ class WaterIntake {
   final String time;
   final String date;
   final String target;
-
+  final int timestamp;
   WaterIntake({
     required this.ml,
     required this.time,
     required this.date,
     required this.target,
+    required this.timestamp,
   });
 
   // Factory constructor to create an instance from JSON
@@ -18,6 +19,7 @@ class WaterIntake {
       time: json['time'],
       date: json['date'],
       target: json['target'],
+      timestamp: json['timestamp'],
     );
   }
 
@@ -28,6 +30,7 @@ class WaterIntake {
       'time': time,
       'date': date,
       'target': target,
+      'timestamp': timestamp,
     };
   }
 }

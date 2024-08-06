@@ -38,9 +38,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     startProgress();
     _controller.addListener(() {
       if (_controller.isCompleted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) =>  MainApp()),
-        );
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => MainApp()),
+                (route) => route == null);
       }
     });
   }

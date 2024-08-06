@@ -1,5 +1,6 @@
-import 'dart:async';
-
+import 'package:share_plus/share_plus.dart';
+import 'package:the_first_drink_water/utils/AppUtils.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 
 class SettingPaper extends StatelessWidget {
@@ -76,43 +77,47 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               Image.asset('assets/image/bg_setting_top.webp'),
               Padding(
                 padding: const EdgeInsets.only(top: 50.0),
-                child: Image.asset(width: 31, height: 24, 'assets/image/ic_me.webp'),
+                child: Image.asset(
+                    width: 31, height: 24, 'assets/image/ic_me.webp'),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 110.0,left: 20,right: 20),
-                child: Image.asset( 'assets/image/bg_setting_mid_2.png'),
+                padding: const EdgeInsets.only(top: 110.0, left: 20, right: 20),
+                child: Image.asset('assets/image/bg_setting_mid_2.png'),
               ),
             ]),
-
-
-        Padding(
+            Padding(
               padding: const EdgeInsets.only(
                   left: 20, right: 20, top: 12, bottom: 6),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: const Color(0xFF47B96D),
-                    width: 2.0,
+              child: GestureDetector(
+                  onTap: () {
+                    Share.share("https://book.flutterchina.club/chapter6/keepalive.html#_6-8-1-automatickeepalive");
+                  },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: const Color(0xFF47B96D),
+                      width: 2.0,
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Share',
-                        style: TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 14,
-                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                      child: Row(
+                        children: [
+                          const Text(
+                              'Share',
+                              style: TextStyle(
+                                color: Color(0xFF333333),
+                                fontSize: 14,
+                              ),
+                            ),
+                          const Spacer(),
+                          Image.asset(
+                              width: 20, height: 20, 'assets/image/ic_be.webp')
+                        ],
                       ),
-                      const Spacer(),
-                      Image.asset(
-                          width: 20, height: 20, 'assets/image/ic_be.webp')
-                    ],
                   ),
                 ),
               ),
@@ -120,31 +125,36 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             Padding(
               padding:
                   const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: const Color(0xFF47B96D),
-                    width: 2.0,
+              child: GestureDetector(
+                onTap: (){
+                  launchComment();
+                },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: const Color(0xFF47B96D),
+                      width: 2.0,
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Comment',
-                        style: TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Comment',
+                          style: TextStyle(
+                            color: Color(0xFF333333),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      Image.asset(
-                          width: 20, height: 20, 'assets/image/ic_be.webp')
-                    ],
+                        const Spacer(),
+                        Image.asset(
+                            width: 20, height: 20, 'assets/image/ic_be.webp')
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -152,31 +162,36 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             Padding(
               padding:
                   const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: const Color(0xFF47B96D),
-                    width: 2.0,
+              child: GestureDetector(
+                onTap: (){
+                  launchUserAgreement();
+                },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: const Color(0xFF47B96D),
+                      width: 2.0,
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'User agreement',
-                        style: TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'User agreement',
+                          style: TextStyle(
+                            color: Color(0xFF333333),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      Image.asset(
-                          width: 20, height: 20, 'assets/image/ic_be.webp')
-                    ],
+                        const Spacer(),
+                        Image.asset(
+                            width: 20, height: 20, 'assets/image/ic_be.webp')
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -184,31 +199,36 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             Padding(
               padding:
                   const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: const Color(0xFF47B96D),
-                    width: 2.0,
+              child: GestureDetector(
+                onTap: (){
+                  launchURL();
+                },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: const Color(0xFF47B96D),
+                      width: 2.0,
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Privacy Policy',
-                        style: TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Privacy Policy',
+                          style: TextStyle(
+                            color: Color(0xFF333333),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      Image.asset(
-                          width: 20, height: 20, 'assets/image/ic_be.webp')
-                    ],
+                        const Spacer(),
+                        Image.asset(
+                            width: 20, height: 20, 'assets/image/ic_be.webp')
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -218,7 +238,31 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       ),
     );
   }
-
+  void launchURL() async {
+    //TODO: Replace with your own url
+    const url = 'https://flutterchina.club/';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      AppUtils.showToast('Cant open web page $url');
+    }
+  }
+  void launchComment() async {
+    const url = 'https://play.google.com/store/apps/details?id=com.blooming.unlimited.fast';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      AppUtils.showToast('Cant open web page $url');
+    }
+  }
+  void launchUserAgreement() async {
+    const url = 'https://play.google.com/store/apps/details?id=com.blooming.unlimited.fast';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      AppUtils.showToast('Cant open web page $url');
+    }
+  }
   void restartApp(BuildContext context) {
     Navigator.of(context).removeRoute(ModalRoute.of(context) as Route);
     Navigator.pushAndRemoveUntil(

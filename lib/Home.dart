@@ -1,16 +1,20 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:the_first_drink_water/AllHistory.dart';
 import 'package:the_first_drink_water/Result.dart';
+import 'package:the_first_drink_water/StartPaper.dart';
+import 'package:the_first_drink_water/DetailHistory.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
 import 'bean/WaterIntake.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
+    return const Scaffold(
+      body: HomeScreen(),
     );
   }
 }
@@ -23,36 +27,39 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<HomeScreen> {
-  final heNumController = TextEditingController();
   List<String> drinkNums = [""];
-  List<WaterIntake> waterIntakeList = List.empty();
+  List<WaterIntake> waterTodayIntakeList = List.empty();
+  late String toNum;
+  int zongWater = 0;
+  int days = 0;
+  int avgIntake = 0;
+  int result = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
-    heNumController.text =
-        (LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String?)!;
-    heNumController.addListener(showCreteBut);
+    setState(() {
+      toNum = LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String;
+      updateDailyTarget();
+      setUiData();
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    heNumController.removeListener(showCreteBut);
-  }
-
-  void showCreteBut() async {
-    heNumController.text.trim();
   }
 
   @override
   Widget build(BuildContext context) {
-    drinkNums = AppUtils.getDrinkNum();
-    waterIntakeList = AppUtils.getWaterIntakeData();
+    setUiData();
     return Scaffold(
       body: WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: () async {
+          SystemNavigator.pop();
+          return false;
+        },
         child: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -76,16 +83,21 @@ class _WelcomeScreenState extends State<HomeScreen> {
                       child: Image.asset('assets/image/ic_panda_drink.webp'),
                     ),
                     Spacer(),
-                    SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: Image.asset('assets/image/ic_clock.webp'),
+                    GestureDetector(
+                      onTap: () {
+                        jumpToAllHistoryPaper();
+                      },
+                      child: SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: Image.asset('assets/image/ic_clock.webp'),
+                      ),
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(right: 40, left: 40),
+                padding: const EdgeInsets.only(right: 40, left: 40),
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: Column(
@@ -104,43 +116,39 @@ class _WelcomeScreenState extends State<HomeScreen> {
                       Padding(
                         padding: EdgeInsets.only(top: 7),
                         child: Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: TextField(
-                                  keyboardType: TextInputType.number,
-                                  controller: heNumController,
-                                  decoration: const InputDecoration(
-                                    hintStyle: TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF666666),
+                          child: GestureDetector(
+                            onTap: () {
+                              jumpToStartPaper();
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    toNum,
+                                    style: const TextStyle(
+                                      fontSize: 30,
+                                      color: Color(0xFF262626),
                                     ),
-                                    border: InputBorder.none,
-                                  ),
-                                  maxLines: 1,
-                                  style: const TextStyle(
-                                    fontSize: 30,
-                                    color: Color(0xFF262626),
                                   ),
                                 ),
-                              ),
-                              const Text(
-                                'MI',
-                                style: TextStyle(
-                                  color: Color(0xFFB0B0B0),
-                                  fontSize: 14,
+                                const Text(
+                                  'MI',
+                                  style: TextStyle(
+                                    color: Color(0xFFB0B0B0),
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Image.asset(
-                                    width: 12,
-                                    height: 12,
-                                    'assets/image/ic_edit.webp'),
-                              ),
-                            ],
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Image.asset(
+                                      width: 12,
+                                      height: 12,
+                                      'assets/image/ic_edit.webp'),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -153,7 +161,8 @@ class _WelcomeScreenState extends State<HomeScreen> {
                               'assets/image/ic_home_logo.webp'),
                           Padding(
                             padding: const EdgeInsets.only(top: 30, left: 5),
-                            child: CustomCircularRing(percentage: 40),
+                            child: CustomCircularRing(
+                                percentage: result, zongWater: zongWater),
                           ),
                         ],
                       ),
@@ -204,23 +213,28 @@ class _WelcomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 30),
-                      Row(
-                        children: [
-                          const Text(
-                            "Today’s hydration records",
-                            style: TextStyle(
-                              color: Color(0xFF1C5A43),
-                              fontSize: 12,
+                      const SizedBox(height: 30),
+                      GestureDetector(
+                        onTap: () {
+                          jumpToTodayApp(context);
+                        },
+                        child: Row(
+                          children: [
+                            const Text(
+                              "Today’s hydration records",
+                              style: TextStyle(
+                                color: Color(0xFF1C5A43),
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                          Spacer(),
-                          Image.asset(
-                            'assets/image/ic_arw_2.webp',
-                            width: 16,
-                            height: 16,
-                          )
-                        ],
+                            Spacer(),
+                            Image.asset(
+                              'assets/image/ic_arw_2.webp',
+                              width: 16,
+                              height: 16,
+                            )
+                          ],
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 15),
@@ -229,53 +243,165 @@ class _WelcomeScreenState extends State<HomeScreen> {
                           color: Color(0xFFE7E7E7),
                         ),
                       ),
-                      Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: waterIntakeList.length,
-                            itemBuilder: (context, index) {
-                              return Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 15),
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/image/ic_water_droplet.webp',
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          '${waterIntakeList[index].ml}ml',
-                                          style: const TextStyle(
-                                            color: Color(0xFF5CE69C),
-                                            fontSize: 14,
+                      if (waterTodayIntakeList.isNotEmpty)
+                        Expanded(
+                          child: ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              itemCount: min(3, waterTodayIntakeList.length),
+                              itemBuilder: (context, index) {
+                                return Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 15),
+                                      child: Row(
+                                        children: [
+                                          Image.asset(
+                                            'assets/image/ic_water_droplet.webp',
+                                            width: 20,
+                                            height: 20,
                                           ),
-                                        ),
-                                        Spacer(),
-                                        Text(
-                                          waterIntakeList[index].time,
-                                          style: const TextStyle(
-                                            color: Color(0xFFFFB763),
-                                            fontSize: 14,
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            '${waterTodayIntakeList[index].ml}ml',
+                                            style: const TextStyle(
+                                              color: Color(0xFF5CE69C),
+                                              fontSize: 14,
+                                            ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Image.asset(
-                                          'assets/image/ic_delete.webp',
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                      ],
+                                          Spacer(),
+                                          GestureDetector(
+                                            onTap: () {
+                                              deleteIntakeById(
+                                                  waterTodayIntakeList[index]
+                                                      .timestamp);
+                                            },
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  waterTodayIntakeList[index]
+                                                      .time,
+                                                  style: const TextStyle(
+                                                    color: Color(0xFFFFB763),
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Image.asset(
+                                                  'assets/image/ic_delete.webp',
+                                                  width: 20,
+                                                  height: 20,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                );
+                              }),
+                        )
+                      else
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 80.0),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      width: 134,
+                                      height: 114,
+                                      child: Image.asset(
+                                          'assets/image/ic_em.webp'),
                                     ),
-                                  )
-                                ],
-                              );
-                            }),
-                      ),
+                                    const Text(
+                                      "No records yet.",
+                                      style: TextStyle(
+                                        color: Color(0xFFBBC8C2),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      if (AppUtils.getWaterIntakeByDate().isNotEmpty)
+                        GestureDetector(
+                          onTap: () {
+                            jumpToAllHistoryPaper();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 20.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF262626),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 20.0, horizontal: 16),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 204,
+                                      child: RichText(
+                                        text: TextSpan(
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                          ),
+                                          children: <TextSpan>[
+                                            const TextSpan(
+                                                text:
+                                                    'You’ve been drinking water for '),
+                                            TextSpan(
+                                              text: '$days',
+                                              style: const TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const TextSpan(
+                                                text: ' days, averaging '),
+                                            TextSpan(
+                                              text: '$avgIntake',
+                                              style: const TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const TextSpan(
+                                                text: ' ml per day.'),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    const Text(
+                                      'All',
+                                      style: TextStyle(
+                                        color: Color(0xFF47B96D),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: Image.asset(
+                                          'assets/image/ic_arw_2.webp'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -287,6 +413,65 @@ class _WelcomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void updateDailyTarget() {
+    String date = AppUtils.getNowDate();
+    AppUtils.updateTargetForDate(date, toNum);
+  }
+
+  void jumpToStartPaper() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const StartPaper(),
+      ),
+    );
+  }
+
+  void jumpToAllHistoryPaper() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AllHistory()),
+    ).then((value) {
+      setState(() {
+        setUiData();
+      });
+    });
+  }
+
+  int getTodayWaterData() {
+    DateTime now = DateTime.now();
+    String year = now.year.toString();
+    String month = now.month.toString().padLeft(2, '0');
+    String day = now.day.toString().padLeft(2, '0');
+    String formattedDate = '$year-$month-$day';
+    return AppUtils.getWaterConsumption(formattedDate);
+  }
+
+  void deleteIntakeById(int timestamp) {
+    AppUtils.deleteWaterIntakeData(timestamp);
+    setState(() {
+      waterTodayIntakeList = AppUtils.getTodayWaterIntakeData();
+    });
+  }
+
+  void setUiData() {
+    drinkNums = AppUtils.getDrinkNum();
+    waterTodayIntakeList = AppUtils.getTodayWaterIntakeData();
+    zongWater = getTodayWaterData();
+    days = AppUtils.getAllWaterDays();
+    int daysWater = AppUtils.getAllWaterDays();
+    if (daysWater > 0) {
+      avgIntake = AppUtils.getAllTotalWaterIntake() ~/ daysWater;
+    } else {
+      avgIntake = 0;
+    }
+    final double toNumDouble = double.parse(toNum);
+    result = ((zongWater / toNumDouble) * 100).toInt();
+    if (result > 100) {
+      result = 100;
+    }
+  }
+
   void saveWaterData(String waterNum) {
     DateTime now = DateTime.now();
     String year = now.year.toString();
@@ -296,30 +481,48 @@ class _WelcomeScreenState extends State<HomeScreen> {
     String hour = now.hour.toString().padLeft(2, '0');
     String minute = now.minute.toString().padLeft(2, '0');
     String formattedTime = '$hour:$minute';
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+
     String? targetValue =
         LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String?;
     WaterIntake bean = WaterIntake(
         date: formattedDate,
         target: targetValue!,
         time: formattedTime,
-        ml: waterNum);
+        ml: waterNum,
+        timestamp: timestamp);
     AppUtils.setWaterIntakeData(bean);
     setState(() {
-      waterIntakeList = AppUtils.getWaterIntakeData();
+      waterTodayIntakeList = AppUtils.getWaterIntakeData();
     });
   }
 
   void ResultApp(BuildContext context, String num) {
-    Navigator.of(context).push(
+    Navigator.push(
+      context,
       MaterialPageRoute(
         builder: (context) => Result(nums: num),
       ),
     );
   }
 
+  void jumpToTodayApp(BuildContext context) {
+    String date = AppUtils.getNowDate();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => DetailHistory(
+                dateToday: date,
+              )),
+    ).then((value) {
+      setState(() {
+        setUiData();
+      });
+    });
+  }
+
   void showCustomDialog(BuildContext context) {
     TextEditingController _controller = TextEditingController();
-
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -350,9 +553,10 @@ class _WelcomeScreenState extends State<HomeScreen> {
 }
 
 class CustomCircularRing extends StatelessWidget {
-  final double percentage;
+  final int percentage;
+  final int zongWater;
 
-  CustomCircularRing({required this.percentage});
+  CustomCircularRing({required this.percentage, required this.zongWater});
 
   @override
   Widget build(BuildContext context) {
@@ -360,16 +564,18 @@ class CustomCircularRing extends StatelessWidget {
       width: 77,
       height: 77,
       child: CustomPaint(
-        painter: CircularRingPainter(percentage: percentage),
+        painter:
+            CircularRingPainter(percentage: percentage, zongWater: zongWater),
       ),
     );
   }
 }
 
 class CircularRingPainter extends CustomPainter {
-  final double percentage;
+  final int percentage;
+  final int zongWater;
 
-  CircularRingPainter({required this.percentage});
+  CircularRingPainter({required this.percentage, required this.zongWater});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -408,8 +614,7 @@ class CircularRingPainter extends CustomPainter {
     canvas.restore();
 
     // Draw text
-    drawCenteredText(
-        canvas, size, "${percentage.toInt()}/100", Colors.white, -8);
+    drawCenteredText(canvas, size, "${zongWater}ML", Colors.white, -8);
     drawCenteredText(canvas, size, "${percentage.toInt()}%", Colors.white, 6);
   }
 

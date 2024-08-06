@@ -61,9 +61,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void jumpToHome() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => MainApp()),
-    );
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => MainApp()),
+            (route) => route == null);
   }
 
   @override

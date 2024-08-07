@@ -47,7 +47,7 @@ class _SavePaperScreenState extends State<SavePaperScreen>
   void saveWaterGoalNum() {
     var goalNum = netController.text.trim();
     if (goalNum.isNotEmpty && AppUtils.isNumeric(goalNum)) {
-      if (num.tryParse(goalNum)! > 6000 || num.tryParse(goalNum)! < 0) {
+      if (num.tryParse(goalNum)! > 6000 || num.tryParse(goalNum)! <=  0) {
         AppUtils.showToast("The upper limit is 6000ml, the lower limit is 0ml");
         return;
       }

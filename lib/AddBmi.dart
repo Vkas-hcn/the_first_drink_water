@@ -97,6 +97,10 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
 
   }
   void saveBmiNum(){
+    if(weightController.text.trim().isEmpty ||  heightController.text.trim().isEmpty){
+      AppUtils.showToast("Please enter a numeric value");
+      return;
+    }
     if( num.tryParse(weightController.text)!<= 0 || num.tryParse(heightController.text)!<= 0 ){
       AppUtils.showToast("Please enter a value greater than zero");
       return;
@@ -180,7 +184,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
                     child: Row(
                       children: [
                         SizedBox(
-                          width: 300,
+                          width: 250,
                           child: TextField(
                             keyboardType: TextInputType.number,
                             controller: weightController,
@@ -192,7 +196,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
                                   required bool isFocused,
                                   required int? maxLength,
                                 }) {
-                              return null; // 隐藏文本计数
+                              return null;
                             },
                             style: const TextStyle(
                               fontSize: 15,
@@ -250,7 +254,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
                     child: Row(
                       children: [
                         SizedBox(
-                          width: 300,
+                          width: 250,
                           child: TextField(
                             keyboardType: TextInputType.number,
                             controller: heightController,

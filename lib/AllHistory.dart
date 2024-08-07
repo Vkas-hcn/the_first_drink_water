@@ -181,8 +181,7 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                       if (waterIntakeByDate.isNotEmpty)
                         Expanded(
                           child: GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               mainAxisSpacing: 6.0,
                               crossAxisSpacing: 6.0,
@@ -190,19 +189,11 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                             ),
                             itemCount: waterIntakeByDate.length,
                             itemBuilder: (context, index) {
-                              var dailyIntake =
-                                  waterIntakeByDate.values.elementAt(index);
-                              var date = waterIntakeByDate.values
-                                  .elementAt(index)[index]
-                                  .date;
-                              completionRateDay =
-                                  AppUtils.completionRateOnACertainDay(
-                                      dailyIntake.first.date);
-                              waterMlDay = AppUtils.getWaterConsumption(
-                                  dailyIntake.first.date);
-                              waterCupDay = AppUtils.getWaterListDay(
-                                      dailyIntake.first.date)
-                                  .length;
+                              var date = waterIntakeByDate.keys.elementAt(index);
+                              completionRateDay = AppUtils.completionRateOnACertainDay(date);
+                              waterMlDay = AppUtils.getWaterConsumption(date);
+                              waterCupDay = AppUtils.getWaterListDay(date).length;
+
                               return Padding(
                                 padding: const EdgeInsets.all(4.0),
                                 child: GestureDetector(
@@ -212,24 +203,21 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                                   child: Container(
                                     decoration: const BoxDecoration(
                                       image: DecorationImage(
-                                        image: AssetImage(
-                                            'assets/image/bg_history.webp'),
+                                        image: AssetImage('assets/image/bg_history.webp'),
                                         fit: BoxFit.fill,
                                       ),
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(12),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               Text(
-                                                "${waterIntakeByDate.isNotEmpty ? completionRateDay : 0}%",
+                                                "${completionRateDay}%",
                                                 style: TextStyle(
-                                                  color: (completionRateDay >=
-                                                          100)
+                                                  color: (completionRateDay >= 100)
                                                       ? const Color(0xFF00BA34)
                                                       : const Color(0xFFFFA401),
                                                   fontSize: 20,
@@ -239,57 +227,50 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                                               SizedBox(
                                                 width: 20,
                                                 height: 20,
-                                                child: (completionRateDay >=
-                                                        100)
-                                                    ? Image.asset(
-                                                        'assets/image/ic_finish.webp')
-                                                    : Image.asset(
-                                                        'assets/image/ic_dis_finish.webp'),
+                                                child: (completionRateDay >= 100)
+                                                    ? Image.asset('assets/image/ic_finish.webp')
+                                                    : Image.asset('assets/image/ic_dis_finish.webp'),
                                               ),
                                             ],
                                           ),
-                                          SizedBox(height: 12),
+                                          const SizedBox(height: 12),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 9),
+                                            padding: const EdgeInsets.symmetric(vertical: 9),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                               color: Colors.black,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
-                                              "${waterIntakeByDate.isNotEmpty ? waterMlDay : 0}ml",
+                                              "${waterMlDay}ml",
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 14,
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 12),
+                                          const SizedBox(height: 12),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 9),
+                                            padding: const EdgeInsets.symmetric(vertical: 9),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                               color: Colors.black,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
-                                              "${waterIntakeByDate.isNotEmpty ? waterCupDay : 0}Cups",
+                                              "${waterCupDay}Cups",
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 14,
                                               ),
                                             ),
                                           ),
-                                          Spacer(),
+                                          const Spacer(),
                                           Row(
                                             children: [
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
-                                                dailyIntake[index].date,
+                                                date,
                                                 style: const TextStyle(
                                                   color: Color(0xFFBABABA),
                                                   fontSize: 10,

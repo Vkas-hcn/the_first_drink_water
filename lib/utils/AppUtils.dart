@@ -159,9 +159,6 @@ class AppUtils {
 
   static Map<String, List<WaterIntake>> getWaterIntakeByDate() {
     List<WaterIntake> waterIntakeList = getWaterIntakeData();
-    for (var intake in waterIntakeList) {
-      print('历史总数据----=ml: ${intake.ml}, time: ${intake.time}, date: ${intake.date}, target: ${intake.target}, timestamp: ${intake.timestamp}');
-    }
     Map<String, List<WaterIntake>> waterIntakeByDate = {};
     for (var record in waterIntakeList) {
       if (!waterIntakeByDate.containsKey(record.date)) {
@@ -169,13 +166,7 @@ class AppUtils {
       }
       waterIntakeByDate[record.date]!.add(record);
     }
-    // Print all data in waterIntakeByDate
-    waterIntakeByDate.forEach((date, intakeList) {
-      print('历史总数据2============Date: $date');
-      for (var intake in intakeList) {
-        print('  ml: ${intake.ml}, time: ${intake.time}, date: ${intake.date}, target: ${intake.target}, timestamp: ${intake.timestamp}');
-      }
-    });
+
     return waterIntakeByDate;
   }
 
@@ -206,9 +197,6 @@ class AppUtils {
       }
       return count;
     });
-    print("总完成比-completedDays${completedDays}");
-    print("总完成比-getAllWaterDays${getAllWaterDays()}");
-
     double completionRate = completedDays / getAllWaterDays();
     return (completionRate * 100).toInt();
   }

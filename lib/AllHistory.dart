@@ -45,7 +45,6 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
     waterIntakeByDate = AppUtils.getWaterIntakeByDate();
     print("setUIData===${waterIntakeByDate.isNotEmpty}");
     if (waterIntakeByDate.isNotEmpty) {
-
       daysAll = AppUtils.getAllWaterDays();
       avgIntakeAll =
           AppUtils.getAllTotalWaterIntake() ~/ AppUtils.getAllWaterDays();
@@ -126,11 +125,35 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                     padding: const EdgeInsets.all(19.0),
                     child: Row(
                       children: [
-                        Text("${daysAll} Days",
-                            style: const TextStyle(
-                              color: Color(0xFF00BA34),
-                              fontSize: 16,
-                            )),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFFDD9),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            children: [
+                              const Text(
+                                'Days',
+                                style: TextStyle(
+                                  color: Color(0xFFFFC072),
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 6,
+                              ),
+                              Text(
+                                "$daysAll",
+                                style: const TextStyle(
+                                  color: Color(0xFF00BA34),
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         Spacer(),
                         Text("$avgIntakeAll ml",
                             style: const TextStyle(
@@ -163,7 +186,7 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                               crossAxisCount: 2,
                               mainAxisSpacing: 6.0,
                               crossAxisSpacing: 6.0,
-                              childAspectRatio: 1,
+                              childAspectRatio: 0.9,
                             ),
                             itemCount: waterIntakeByDate.length,
                             itemBuilder: (context, index) {
@@ -172,7 +195,6 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                               var date = waterIntakeByDate.values
                                   .elementAt(index)[index]
                                   .date;
-
                               completionRateDay =
                                   AppUtils.completionRateOnACertainDay(
                                       dailyIntake.first.date);
@@ -204,7 +226,7 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                                           Row(
                                             children: [
                                               Text(
-                                                "${waterIntakeByDate.isNotEmpty?completionRateDay:0}%",
+                                                "${waterIntakeByDate.isNotEmpty ? completionRateDay : 0}%",
                                                 style: TextStyle(
                                                   color: (completionRateDay >=
                                                           100)
@@ -237,7 +259,7 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                                                   BorderRadius.circular(4),
                                             ),
                                             child: Text(
-                                              "${waterIntakeByDate.isNotEmpty?waterMlDay:0}ml",
+                                              "${waterIntakeByDate.isNotEmpty ? waterMlDay : 0}ml",
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 14,
@@ -255,7 +277,7 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                                                   BorderRadius.circular(4),
                                             ),
                                             child: Text(
-                                              "${waterIntakeByDate.isNotEmpty?waterCupDay:0}Cups",
+                                              "${waterIntakeByDate.isNotEmpty ? waterCupDay : 0}Cups",
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 14,

@@ -1,10 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:the_first_drink_water/Result.dart';
-import 'package:the_first_drink_water/StartPaper.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
-import 'package:the_first_drink_water/utils/LocalStorage.dart';
 import 'bean/WaterIntake.dart';
 
 class DetailHistory extends StatelessWidget {
@@ -51,7 +48,12 @@ class _WelcomeScreenState extends State<TodayHistoryScreen> {
     if (waterIntakeList.isNotEmpty) {
       target = waterIntakeList.first.target;
       zongWater = AppUtils.getWaterConsumption(widget.dateToday);
-      result = ((zongWater / (double.parse(target))) * 100).toInt();
+      double num = double.parse(target);
+      if(num<=0){
+        result = 100;
+        return;
+      }
+      result = ((zongWater / num) * 100).toInt();
       if (result > 100) {
         result = 100;
       }

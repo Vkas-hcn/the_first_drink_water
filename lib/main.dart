@@ -37,13 +37,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void pageToHome() {
-    String? stringValue =
-        LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String?;
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
             builder: (context) =>
-            ((stringValue!=null && stringValue.isNotEmpty) ? const Guide() : const StartPaper())),
+           const Guide()),
         (route) => route == null);
   }
 

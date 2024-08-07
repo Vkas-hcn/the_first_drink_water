@@ -102,3 +102,7 @@ flutter:
     - assets/image/bg_history.webp
     - assets/image/ic_dis_finish.webp
     - assets/image/ic_finish.webp
+    - assets/image/ic_add_bmi.webp
+    - assets/image/bg_bmi_item.webp
+    - assets/image/ic_pa_paer.webp
+    - assets/image/icon_remove_bmi.webp

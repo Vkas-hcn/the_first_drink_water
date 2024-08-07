@@ -6,6 +6,7 @@ class LocalStorage {
   static String drinkingWaterGoal = "drinkingWaterGoal";
   static String drinkingWaterNumArray = "drinkingWaterNumArray";
   static String drinkingWaterList = "drinkingWaterList";
+  static String userBmiList = "userBmiList";
 
   static final LocalStorage _instance = LocalStorage._internal();
   late SharedPreferences _prefs;

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:the_first_drink_water/bean/BmiBean.dart';
 import '../bean/WaterIntake.dart';
 import 'LocalStorage.dart';
 
@@ -78,11 +78,8 @@ class AppUtils {
       // Convert parsed JSON to list of WaterIntake objects
       List<WaterIntake> waterIntakeList =
           jsonData.map((json) => WaterIntake.fromJson(json)).toList();
-      waterIntakeList.sort((a, b) {
-        DateTime dateTimeA = DateTime.parse('${a.date} ${a.time}');
-        DateTime dateTimeB = DateTime.parse('${b.date} ${b.time}');
-        return dateTimeB.compareTo(dateTimeA);
-      });
+      // Sort the list by timestamp, newer entries first
+      // waterIntakeList.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       return waterIntakeList;
     } else {
       return List.empty();
@@ -148,9 +145,10 @@ class AppUtils {
 
     // 创建一个新的可变列表并添加现有数据
     List<WaterIntake> mutableList = List.from(jsonBean);
-
+  print("setWaterIntakeData=1====${mutableList.length}");
     // 添加新的水摄入数据到可变列表中
-    mutableList.insert(0, waterIntake);
+    mutableList.add(waterIntake);
+    print("setWaterIntakeData=2====${mutableList.length}");
 
     // 将可变列表编码为JSON字符串
     String jsonString = jsonEncode(mutableList);
@@ -161,6 +159,9 @@ class AppUtils {
 
   static Map<String, List<WaterIntake>> getWaterIntakeByDate() {
     List<WaterIntake> waterIntakeList = getWaterIntakeData();
+    for (var intake in waterIntakeList) {
+      print('历史总数据----=ml: ${intake.ml}, time: ${intake.time}, date: ${intake.date}, target: ${intake.target}, timestamp: ${intake.timestamp}');
+    }
     Map<String, List<WaterIntake>> waterIntakeByDate = {};
     for (var record in waterIntakeList) {
       if (!waterIntakeByDate.containsKey(record.date)) {
@@ -168,6 +169,13 @@ class AppUtils {
       }
       waterIntakeByDate[record.date]!.add(record);
     }
+    // Print all data in waterIntakeByDate
+    waterIntakeByDate.forEach((date, intakeList) {
+      print('历史总数据2============Date: $date');
+      for (var intake in intakeList) {
+        print('  ml: ${intake.ml}, time: ${intake.time}, date: ${intake.date}, target: ${intake.target}, timestamp: ${intake.timestamp}');
+      }
+    });
     return waterIntakeByDate;
   }
 
@@ -202,7 +210,7 @@ class AppUtils {
     print("总完成比-getAllWaterDays${getAllWaterDays()}");
 
     double completionRate = completedDays / getAllWaterDays();
-    return (completionRate*100).toInt();
+    return (completionRate * 100).toInt();
   }
 
   //修改数组中日期目标值
@@ -230,4 +238,103 @@ class AppUtils {
     LocalStorage().setValue(LocalStorage.drinkingWaterList, jsonString);
   }
 
+  //------------------------------------BMI---------------------------------
+
+  static List<BmiBean> getBMIListData() {
+    String? stringValue =
+        LocalStorage().getValue(LocalStorage.userBmiList) as String?;
+    if (stringValue != null && stringValue.isNotEmpty) {
+      List<dynamic> jsonData = jsonDecode(stringValue);
+      List<BmiBean> bmiBeanList =
+          jsonData.map((json) => BmiBean.fromJson(json)).toList();
+      bmiBeanList.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      return bmiBeanList;
+    } else {
+      return List.empty();
+    }
+  }
+
+  static void setBmiData(BmiBean bmiBean) {
+    List<BmiBean> jsonBean = getBMIListData();
+    List<BmiBean> mutableList = List.from(jsonBean);
+    mutableList.insert(0, bmiBean);
+    String jsonString = jsonEncode(mutableList);
+    LocalStorage().setValue(LocalStorage.userBmiList, jsonString);
+  }
+
+  static String calculateBMINum(String heightCmStr, String weightKgStr) {
+    double heightCm = double.parse(heightCmStr);
+    double weightKg = double.parse(weightKgStr);
+    double heightM = heightCm / 100;
+    double bmi = weightKg / (heightM * heightM);
+    // 返回结果和状态
+    return bmi.toStringAsFixed(1);
+  }
+
+  static String calculateBMIState(String heightCmStr, String weightKgStr) {
+    double heightCm = double.parse(heightCmStr);
+    double weightKg = double.parse(weightKgStr);
+    double heightM = heightCm / 100;
+    double bmi = weightKg / (heightM * heightM);
+    String status;
+    if (bmi < 18.5) {
+      status = 'Underweight';
+    } else if (bmi >= 18.5 && bmi <= 24.9) {
+      status = 'Normal';
+    } else if (bmi >= 25 && bmi <= 29.9) {
+      status = 'Overweight';
+    } else {
+      status = 'Obesity';
+    }
+    return status;
+  }
+
+  static void deleteBmiData(int timestamp) {
+    String? stringValue =
+        LocalStorage().getValue(LocalStorage.userBmiList) as String?;
+    if (stringValue != null && stringValue.isNotEmpty) {
+      List<dynamic> jsonData = jsonDecode(stringValue);
+      List<BmiBean> bmiBeanList =
+          jsonData.map((json) => BmiBean.fromJson(json)).toList();
+      bmiBeanList.removeWhere((item) => item.timestamp == timestamp);
+      String updatedStringValue = jsonEncode(bmiBeanList);
+      LocalStorage().setValue(LocalStorage.userBmiList, updatedStringValue);
+    }
+  }
+
+  static String getFormattedDate(int timestamp) {
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    int year = dateTime.year;
+    int month = dateTime.month;
+    int day = dateTime.day;
+    String monthStr = month < 10 ? '0$month' : '$month';
+    String dayStr = day < 10 ? '0$day' : '$day';
+    String formattedDate = '$year-$monthStr-$dayStr';
+    return formattedDate;
+  }
+
+  static String getFormattedDate2(int timestamp) {
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    int year = dateTime.year;
+    int month = dateTime.month;
+    int day = dateTime.day;
+    int hour = dateTime.hour;
+    int minute = dateTime.minute;
+    String monthStr = '$month';
+    String dayStr = '$day';
+    String hourStr = hour < 10 ? '0$hour' : '$hour';
+    String minuteStr = minute < 10 ? '0$minute' : '$minute';
+    String formattedDate = '$year/$monthStr/$dayStr $hourStr:$minuteStr';
+    return formattedDate;
+  }
+
+  static String getBmiStats(String state) {
+    List<BmiBean> bmiList = getBMIListData();
+    Map<String, String> bmiStats = BmiBean.calculateBmiStatistics(bmiList);
+    if (bmiStats[state] == null) {
+      return "0";
+    } else {
+      return bmiStats[state]!;
+    }
+  }
 }

@@ -1,31 +1,29 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:the_first_drink_water/Home.dart';
 import 'package:the_first_drink_water/MainApp.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
 
-class StartPaper extends StatelessWidget {
-  const StartPaper({super.key});
+class SavePaper extends StatelessWidget {
+  const SavePaper({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: WelcomeScreen(),
+      home: SavePaperScreen(),
     );
   }
 }
 
-class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({super.key});
+class SavePaperScreen extends StatefulWidget {
+  const SavePaperScreen({super.key});
 
   @override
-  _WelcomeScreenState createState() => _WelcomeScreenState();
+  _SavePaperScreenState createState() => _SavePaperScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen>
+class _SavePaperScreenState extends State<SavePaperScreen>
     with SingleTickerProviderStateMixin {
   final netController = TextEditingController();
 
@@ -33,7 +31,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   void initState() {
     super.initState();
     netController.addListener(showCreteBut);
-    netController.text = "1500";
+    netController.text = LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String;
   }
 
   @override
@@ -65,17 +63,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => MainApp()),
-        (route) => route == null);
+            (route) => route == null);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: WillPopScope(
-        onWillPop: () async {
-          SystemNavigator.pop();
-          return false;
-        },
+        onWillPop: () async => false,
         child: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -167,7 +162,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ),
                     child: const Center(
                       child: Text(
-                        'Start',
+                        'Save',
                         style: TextStyle(
                           color: Color(0xFFFFFFFF),
                           fontSize: 15,
@@ -188,7 +183,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     Navigator.of(context).removeRoute(ModalRoute.of(context) as Route);
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const StartPaper()),
+        MaterialPageRoute(builder: (context) => const SavePaper()),
         (route) => route == null);
   }
 }

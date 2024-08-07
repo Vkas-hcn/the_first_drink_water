@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class Result extends StatefulWidget {
   final String nums;
-
-  const Result({super.key, required this.nums});
+  final int result;
+  const Result({super.key, required this.nums, required this.result});
 
   @override
   State<Result> createState() => _ResultState();
@@ -61,7 +61,7 @@ class _ResultState extends State<Result> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 46,
             ),
             Image.asset(
@@ -72,19 +72,19 @@ class _ResultState extends State<Result> {
             Center(
               child: Text(
                 "+${widget.nums}ml",
-                style: TextStyle(
+                style: const TextStyle(
                   color: Color(0xFF262626),
                   fontSize: 24,
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             Center(
               child: Text(
-                  "You’ve achieved 64% of your goal,keep it up!",
-              style: TextStyle(
+                  "You’ve achieved ${widget.result}% of your goal,keep it up!",
+              style: const TextStyle(
                   color: Color(0xFFBABABA),
                   fontSize: 14,
                 ),

@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:the_first_drink_water/Home.dart';
-import 'package:the_first_drink_water/StartPaper.dart';
+import 'package:the_first_drink_water/utils/LocalStorage.dart';
 
 import 'MainApp.dart';
+import 'StartPaper.dart';
 
 class Guide extends StatelessWidget {
   const Guide({super.key});
@@ -38,14 +38,20 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     startProgress();
     _controller.addListener(() {
       if (_controller.isCompleted) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => MainApp()),
-                (route) => route == null);
+        pageToHome();
       }
     });
   }
-
+  void pageToHome() {
+    String? stringValue =
+    LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String?;
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+            ((stringValue!=null && stringValue.isNotEmpty) ?  MainApp() : const StartPaper())),
+            (route) => route == null);
+  }
   @override
   void dispose() {
     _controller.dispose();

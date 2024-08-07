@@ -8,6 +8,7 @@ import 'package:the_first_drink_water/StartPaper.dart';
 import 'package:the_first_drink_water/DetailHistory.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
+import 'SavePaper.dart';
 import 'bean/WaterIntake.dart';
 
 class Home extends StatelessWidget {
@@ -188,7 +189,10 @@ class _WelcomeScreenState extends State<HomeScreen> {
                                       onTap: () {
                                         print("点击item-${drinkNums[index]}");
                                         saveWaterData(drinkNums[index]);
-                                        ResultApp(context, drinkNums[index]);
+                                        // 延迟1秒钟执行ResultApp
+                                        Future.delayed( Duration(milliseconds: 200), () {
+                                          ResultApp(context, drinkNums[index]);
+                                        });
                                       },
                                       child: Stack(
                                         alignment: Alignment.center,
@@ -422,7 +426,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const StartPaper(),
+        builder: (context) =>  const SavePaper(),
       ),
     );
   }
@@ -466,6 +470,10 @@ class _WelcomeScreenState extends State<HomeScreen> {
       avgIntake = 0;
     }
     final double toNumDouble = double.parse(toNum);
+    if(toNumDouble<=0){
+      result = 100;
+      return;
+    }
     result = ((zongWater / toNumDouble) * 100).toInt();
     if (result > 100) {
       result = 100;
@@ -493,15 +501,19 @@ class _WelcomeScreenState extends State<HomeScreen> {
         timestamp: timestamp);
     AppUtils.setWaterIntakeData(bean);
     setState(() {
-      waterTodayIntakeList = AppUtils.getWaterIntakeData();
+      setUiData();
     });
+    waterTodayIntakeList = AppUtils.getWaterIntakeData();
+    for (var intake in waterTodayIntakeList) {
+      print('总数据----=ml: ${intake.ml}, time: ${intake.time}, date: ${intake.date}, target: ${intake.target}, timestamp: ${intake.timestamp}');
+    }
   }
 
   void ResultApp(BuildContext context, String num) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Result(nums: num),
+        builder: (context) => Result(nums: num,result: result),
       ),
     );
   }
@@ -533,7 +545,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
             String inputValue = _controller.text;
             Navigator.of(context).pop();
             print("User input: $inputValue ml");
-            if (!AppUtils.isNumeric(inputValue)) {
+            if (!AppUtils.isNumeric(inputValue) || num.tryParse(inputValue)!<= 0) {
               AppUtils.showToast("Please enter legal numbers");
               return;
             }

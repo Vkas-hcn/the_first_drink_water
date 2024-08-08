@@ -43,6 +43,14 @@ android {
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }
+    signingConfigs {
+        release {
+            keyAlias 'water'
+            keyPassword 'water123456'
+            storeFile file('water.jks')
+            storePassword 'water123456'
+        }
+    }
 
     buildTypes {
         release {

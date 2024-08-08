@@ -86,80 +86,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
             ]),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 20, right: 20, top: 12, bottom: 6),
-              child: GestureDetector(
-                  onTap: () {
-                    Share.share("https://book.flutterchina.club/chapter6/keepalive.html#_6-8-1-automatickeepalive");
-                  },
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: const Color(0xFF47B96D),
-                      width: 2.0,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                      child: Row(
-                        children: [
-                          const Text(
-                              'Share',
-                              style: TextStyle(
-                                color: Color(0xFF333333),
-                                fontSize: 14,
-                              ),
-                            ),
-                          const Spacer(),
-                          Image.asset(
-                              width: 20, height: 20, 'assets/image/ic_be.webp')
-                        ],
-                      ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
-              child: GestureDetector(
-                onTap: (){
-                  launchComment();
-                },
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: const Color(0xFF47B96D),
-                      width: 2.0,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Comment',
-                          style: TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 14,
-                          ),
-                        ),
-                        const Spacer(),
-                        Image.asset(
-                            width: 20, height: 20, 'assets/image/ic_be.webp')
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
               padding:
                   const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
               child: GestureDetector(
@@ -240,7 +166,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
   void launchURL() async {
     //TODO: Replace with your own url
-    const url = 'https://flutterchina.club/';
+    const url = 'https://watertrackerpanda.com/privacy.html';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -256,7 +182,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     }
   }
   void launchUserAgreement() async {
-    const url = 'https://play.google.com/store/apps/details?id=com.blooming.unlimited.fast';
+    const url = 'https://watertrackerpanda.com/terms.html';
     if (await canLaunch(url)) {
       await launch(url);
     } else {

@@ -41,8 +41,6 @@ class AppUtils {
   static List<String> getDrinkNum() {
     String? stringValue =
         LocalStorage().getValue(LocalStorage.drinkingWaterNumArray) as String?;
-    print("getDrinkNum==${stringValue}");
-
     if (stringValue != null && stringValue.isNotEmpty) {
       return stringValue.split(',');
     } else {

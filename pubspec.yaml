@@ -37,7 +37,6 @@ dependencies:
   google_mobile_ads: ^2.0.0
   facebook_app_events: ^0.19.2
   http: ^1.2.1
-  huawei_scan: ^2.12.0+302
   cupertino_icons: ^1.0.6
   share_plus: ^6.3.0
 

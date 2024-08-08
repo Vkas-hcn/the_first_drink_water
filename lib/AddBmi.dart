@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 
+import 'DetailBMI.dart';
+
 class AddBmi extends StatelessWidget {
   const AddBmi({super.key});
 
@@ -36,9 +38,9 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
       setUiData();
     });
     heightController.addListener(showHeight);
-    heightController.text = "163";
+    heightController.text = "175";
     weightController.addListener(showHeight);
-    weightController.text = "60";
+    weightController.text = "70";
     notesController.addListener(showHeight);
   }
 
@@ -78,6 +80,13 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
 
   void backToNextPaper() {
     Navigator.pop(context);
+
+  }
+  void backToDetailBMIPaper(BmiBean bean) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DetailBMI(bean: bean)),
+    );
   }
 
   void deleteIntakeById(int timestamp) {
@@ -94,7 +103,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
         remark: notesController.text,
         timestamp: timestamp);
     AppUtils.setBmiData(bean);
-
+    backToDetailBMIPaper(bean);
   }
   void saveBmiNum(){
     if(weightController.text.trim().isEmpty ||  heightController.text.trim().isEmpty){
@@ -106,7 +115,6 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
       return;
     }
     saveWaterData();
-    backToNextPaper();
   }
   @override
   Widget build(BuildContext context) {

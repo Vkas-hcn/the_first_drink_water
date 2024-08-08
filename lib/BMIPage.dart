@@ -124,7 +124,6 @@ class _WelcomeScreenState extends State<BMIPageScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 110, left: 20, right: 20),
                 child: Container(
-                  width: 320,
                   height: 127,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
@@ -229,7 +228,7 @@ class _WelcomeScreenState extends State<BMIPageScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 300, right: 20, left: 20),
+                padding: const EdgeInsets.only(top: 310, right: 20, left: 20),
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: Column(

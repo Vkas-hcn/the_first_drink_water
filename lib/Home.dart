@@ -72,7 +72,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
             alignment: Alignment.topCenter,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 62, left: 24, right: 24),
+                padding: const EdgeInsets.only(top: 30, left: 24, right: 24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
@@ -105,7 +105,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.only(top: 112),
+                        padding: EdgeInsets.only(top: 80),
                         child: Text(
                           'Today\'s goal',
                           style: TextStyle(
@@ -187,9 +187,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
                                   itemBuilder: (context, index) {
                                     return GestureDetector(
                                       onTap: () {
-                                        print("点击item-${drinkNums[index]}");
                                         saveWaterData(drinkNums[index]);
-                                        // 延迟1秒钟执行ResultApp
                                         Future.delayed( Duration(milliseconds: 200), () {
                                           ResultApp(context, drinkNums[index]);
                                         });
@@ -217,7 +215,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 10),
                       GestureDetector(
                         onTap: () {
                           jumpToTodayApp(context);
@@ -241,7 +239,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 15),
+                        padding: const EdgeInsets.only(top: 10),
                         child: Container(
                           height: 1,
                           color: Color(0xFFE7E7E7),
@@ -310,7 +308,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
                       else
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 80.0),
+                            padding: const EdgeInsets.only(top: 40.0),
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
@@ -503,10 +501,6 @@ class _WelcomeScreenState extends State<HomeScreen> {
     setState(() {
       setUiData();
     });
-    waterTodayIntakeList = AppUtils.getWaterIntakeData();
-    for (var intake in waterTodayIntakeList) {
-      print('总数据----=ml: ${intake.ml}, time: ${intake.time}, date: ${intake.date}, target: ${intake.target}, timestamp: ${intake.timestamp}');
-    }
   }
 
   void ResultApp(BuildContext context, String num) {

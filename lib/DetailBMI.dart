@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_first_drink_water/AddBmi.dart';
+import 'package:the_first_drink_water/MainApp.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 
@@ -43,13 +44,13 @@ class _WelcomeScreenState extends State<DetailBMIScreen> {
   }
 
   void backToNextPaper() {
-    Navigator.pop(context);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   void jumpToAddPaper() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddBmi()),
+      MaterialPageRoute(builder: (context) => MainApp()),
     ).then((value) {
       setState(() {
         setUiData();

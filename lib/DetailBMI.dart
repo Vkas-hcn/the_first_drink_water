@@ -1,8 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:the_first_drink_water/AddBmi.dart';
 import 'package:the_first_drink_water/MainApp.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailBMI extends StatelessWidget {
   final BmiBean bean;
@@ -135,6 +137,35 @@ class _WelcomeScreenState extends State<DetailBMIScreen> {
                           style: const TextStyle(
                             color: Color(0xFF262626),
                             fontSize: 18,
+                          ),
+                        ),
+                        Center(
+                          child: RichText(
+                            text: TextSpan(
+                              text: "Source of information: ",
+                              style: const TextStyle(
+                                color: Color(0xFF999999),
+                                fontSize: 12,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "NIH",
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () async {
+                                      const url = "https://www.nhlbi.nih.gov/health/educational/lose_wt/BMI/bmicalc.htm";
+                                      if (await canLaunch(url)) {
+                                        await launch(url);
+                                      } else {
+                                        throw 'Could not launch $url';
+                                      }
+                                    },
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         SizedBox(height: 8),

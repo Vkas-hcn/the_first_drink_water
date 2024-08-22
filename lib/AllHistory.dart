@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:the_first_drink_water/gg/GgUtils.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
 import 'DetailHistory.dart';
 import 'bean/WaterIntake.dart';
+import 'gg/LoadingOverlay.dart';
 
 class AllHistory extends StatelessWidget {
   const AllHistory({super.key});
@@ -31,6 +33,8 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
   int completionRateDay = 0;
   int waterMlDay = 0;
   int waterCupDay = 0;
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
 
   @override
   void initState() {
@@ -39,6 +43,8 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
     setState(() {
       setUIData();
     });
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   void setUIData() {
@@ -61,19 +67,32 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
     super.dispose();
   }
 
-  void backToNextPaper() {
-    Navigator.pop(context);
+
+
+  void backToNextPaper() async {
+    AppUtils.backToNextPaper(context, adManager, AdWhere.BACK, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: WillPopScope(
-        onWillPop: () async {
-          backToNextPaper();
-          return false;
-        },
-        child: Container(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) {
+        if (didPop) {
+          return;
+        }
+        backToNextPaper();
+      },
+      child: Scaffold(
+        body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/image/img_today_bg.webp'),
@@ -181,7 +200,8 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                       if (waterIntakeByDate.isNotEmpty)
                         Expanded(
                           child: GridView.builder(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               mainAxisSpacing: 6.0,
                               crossAxisSpacing: 6.0,
@@ -189,35 +209,41 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                             ),
                             itemCount: waterIntakeByDate.length,
                             itemBuilder: (context, index) {
-                              var date = waterIntakeByDate.keys.elementAt(index);
-                              completionRateDay = AppUtils.completionRateOnACertainDay(date);
+                              var date =
+                                  waterIntakeByDate.keys.elementAt(index);
+                              completionRateDay =
+                                  AppUtils.completionRateOnACertainDay(date);
                               waterMlDay = AppUtils.getWaterConsumption(date);
-                              waterCupDay = AppUtils.getWaterListDay(date).length;
+                              waterCupDay =
+                                  AppUtils.getWaterListDay(date).length;
 
                               return Padding(
                                 padding: const EdgeInsets.all(4.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    jumToTodayPaper(context, date);
+                                    showGoAd(context, date);
                                   },
                                   child: Container(
                                     decoration: const BoxDecoration(
                                       image: DecorationImage(
-                                        image: AssetImage('assets/image/bg_history.webp'),
+                                        image: AssetImage(
+                                            'assets/image/bg_history.webp'),
                                         fit: BoxFit.fill,
                                       ),
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(12),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               Text(
                                                 "${completionRateDay}%",
                                                 style: TextStyle(
-                                                  color: (completionRateDay >= 100)
+                                                  color: (completionRateDay >=
+                                                          100)
                                                       ? const Color(0xFF00BA34)
                                                       : const Color(0xFFFFA401),
                                                   fontSize: 20,
@@ -227,19 +253,24 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                                               SizedBox(
                                                 width: 20,
                                                 height: 20,
-                                                child: (completionRateDay >= 100)
-                                                    ? Image.asset('assets/image/ic_finish.webp')
-                                                    : Image.asset('assets/image/ic_dis_finish.webp'),
+                                                child: (completionRateDay >=
+                                                        100)
+                                                    ? Image.asset(
+                                                        'assets/image/ic_finish.webp')
+                                                    : Image.asset(
+                                                        'assets/image/ic_dis_finish.webp'),
                                               ),
                                             ],
                                           ),
                                           const SizedBox(height: 12),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 9),
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 9),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                               color: Colors.black,
-                                              borderRadius: BorderRadius.circular(4),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               "${waterMlDay}ml",
@@ -251,11 +282,13 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
                                           ),
                                           const SizedBox(height: 12),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 9),
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 9),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                               color: Colors.black,
-                                              borderRadius: BorderRadius.circular(4),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               "${waterCupDay}Cups",
@@ -322,6 +355,20 @@ class _WelcomeScreenState extends State<AllHistoryScreen> {
         ),
       ),
     );
+  }
+
+  void showGoAd(BuildContext context, String date){
+    AppUtils.goToNextPaper(context, adManager, AdWhere.Next, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      jumToTodayPaper(context,date);
+    });
   }
 
   void jumToTodayPaper(BuildContext context, String date) {

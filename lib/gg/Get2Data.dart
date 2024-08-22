@@ -24,7 +24,7 @@ class Get2Data with ChangeNotifier {
   }
 
   Future<void> getBlackList(BuildContext context) async {
-    String? data = LocalStorage().getValue(LocalStorage.clockData) as String;
+    String? data = LocalStorage().getValue(LocalStorage.clockData);
     print("Blacklist data=${data}");
 
     if (data != null) {

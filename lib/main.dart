@@ -6,15 +6,24 @@ import 'package:the_first_drink_water/Guide.dart';
 import 'package:the_first_drink_water/StartPaper.dart';
 import 'package:the_first_drink_water/gg/Get2Data.dart';
 import 'package:the_first_drink_water/gg/GgUtils.dart';
+import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // MobileAds.instance.initialize();
-  // Firebase.initializeApp();
-  //  LocalStorage().init();
-  runApp(const MyApp());
+  MobileAds.instance.initialize();
+  Firebase.initializeApp();
+   LocalStorage().init();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(MultiProvider(providers: [
+      Provider<GgUtils>(
+        create: (_) => GgUtils(),
+      ),
+      ChangeNotifierProvider(create: (_) => Get2Data()),
+    ], child: const MyApp()));
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +31,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
+      navigatorKey: AppUtils.navigatorKey, // 设置全局 navigatorKey
       home: MyHomePage(),
     );
   }
@@ -42,9 +52,9 @@ class _MyHomePageState extends State<MyHomePage> {
     print("object=================main");
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // final adUtils = Provider.of<Get2Data>(context, listen: false);
-      // Get2Data.initializeFqaId();
-      // adUtils.getBlackList(context);
+      final adUtils = Provider.of<Get2Data>(context, listen: false);
+      Get2Data.initializeFqaId();
+      adUtils.getBlackList(context);
       pageToHome();
     });
   }

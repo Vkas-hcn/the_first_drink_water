@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:the_first_drink_water/gg/GgUtils.dart';
+import 'package:the_first_drink_water/utils/AppUtils.dart';
+
+import 'gg/LoadingOverlay.dart';
 
 class Result extends StatefulWidget {
   final String nums;
@@ -10,17 +14,29 @@ class Result extends StatefulWidget {
 }
 
 class _ResultState extends State<Result> {
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
   @override
   void initState() {
     super.initState();
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   @override
   void dispose() {
     super.dispose();
   }
-  void backToNextPaper() {
-    Navigator.pop(context);
+  void backToNextPaper() async {
+    AppUtils.backToNextPaper(context, adManager, AdWhere.BACK, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    });
   }
   @override
   Widget build(BuildContext context) {

@@ -7,6 +7,7 @@ enum AdWhere {
   OPEN,
   SAVE,
   BACK,
+  Next
 }
 
 class GgUtils {
@@ -14,6 +15,7 @@ class GgUtils {
   static const String openId = "ca-app-pub-3940256099942544/9257395921";
   static const String saveId = "ca-app-pub-3940256099942544/8691691433";
   static const String backId = "ca-app-pub-3940256099942544/8691691433";
+  static const String nextId = "ca-app-pub-3940256099942544/8691691433";
 
   factory GgUtils() {
     return _instance;
@@ -53,6 +55,7 @@ class GgUtils {
         break;
       case AdWhere.SAVE:
       case AdWhere.BACK:
+      case AdWhere.Next:
         _loadInterstitialAdWithRetry(adPosition);
         break;
     }
@@ -91,8 +94,11 @@ class GgUtils {
     String intId = "";
     if (adPosition == AdWhere.SAVE) {
       intId = saveId;
-    } else {
+    } else if(adPosition == AdWhere.BACK){
       intId = backId;
+    }else{
+      intId = nextId;
+
     }
     print("加载$adPosition广告 id=${intId}");
     InterstitialAd.load(
@@ -140,7 +146,7 @@ class GgUtils {
     adCall(adPosition, cloneWindow);
     if (adPosition == AdWhere.OPEN && _appOpenAd != null) {
       _appOpenAd!.show();
-    } else if ((adPosition == AdWhere.SAVE || adPosition == AdWhere.BACK) &&
+    } else if ((adPosition != AdWhere.OPEN) &&
         _interstitialAd != null) {
       _interstitialAd!.show();
       _interstitialAd = null;
@@ -155,6 +161,7 @@ class GgUtils {
         return _appOpenAd != null;
       case AdWhere.SAVE:
       case AdWhere.BACK:
+      case AdWhere.Next:
         return _interstitialAd != null;
     }
   }
@@ -216,9 +223,9 @@ class GgUtils {
   }
 
   static Future<bool> blacklistBlocking() async {
-    String? data = LocalStorage().getValue(LocalStorage.clockData) as String;
+    String? data = LocalStorage().getValue(LocalStorage.clockData);
 
-    if (data != "coeditor") {
+    if (data != "basaltic") {
       return true;
     }
     return false;

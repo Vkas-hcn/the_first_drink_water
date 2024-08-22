@@ -39,7 +39,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   void initState() {
     super.initState();
-    print("object=================");
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+    );
     startProgress();
     adManager = AppUtils.getMobUtils(context);
     Ltfdw = LTFDW(
@@ -52,13 +55,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     });
   }
   void initAdData() async {
+    print("引导页加载广告");
     adManager.loadAd(AdWhere.OPEN);
     adManager.loadAd(AdWhere.SAVE);
     adManager.loadAd(AdWhere.BACK);
+    adManager.loadAd(AdWhere.Next);
     Future.delayed(const Duration(seconds: 1), () {
       showOpenAd();
     });
   }
+
   void showOpenAd() {
     int elapsed = 0;
     const int timeout = 10000;
@@ -78,6 +84,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       }
     });
   }
+
   void pageToHome() {
     String? stringValue =
         LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String?;
@@ -109,9 +116,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     _controller.reset();
   }
 
-  void _restartApp() {
-    restartApp(context);
-  }
 
   void _handleAppResumed() {
     LocalStorage.isInBack = false;
@@ -127,7 +131,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       if (timeInBackground > 3 && LocalStorage.int_ad_show == false) {
         print("热启动");
         restartState = true;
-        _restartApp();
+        restartApp();
       }
     }
   }
@@ -180,13 +184,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
   }
 
-  void restartApp(BuildContext context) {
-    Navigator.of(context).removeRoute(ModalRoute.of(context) as Route);
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const Guide()),
-        (route) => route == null);
+  void restartApp() {
+    AppUtils.navigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const Guide()),
+          (route) => false,
+    );
   }
+
 }
 
 class CustomProgressIndicator extends StatelessWidget {

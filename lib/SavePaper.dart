@@ -5,6 +5,9 @@ import 'package:the_first_drink_water/MainApp.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
 
+import 'gg/GgUtils.dart';
+import 'gg/LoadingOverlay.dart';
+
 class SavePaper extends StatelessWidget {
   const SavePaper({super.key});
 
@@ -26,12 +29,15 @@ class SavePaperScreen extends StatefulWidget {
 class _SavePaperScreenState extends State<SavePaperScreen>
     with SingleTickerProviderStateMixin {
   final netController = TextEditingController();
-
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
   @override
   void initState() {
     super.initState();
     netController.addListener(showCreteBut);
     netController.text = LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String;
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   @override
@@ -65,12 +71,25 @@ class _SavePaperScreenState extends State<SavePaperScreen>
         MaterialPageRoute(builder: (context) => MainApp()),
             (route) => route == null);
   }
-
+  void backToNextPaper() async {
+    AppUtils.backToNextPaper(context, adManager, AdWhere.BACK, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: ()  async {
+          backToNextPaper();
+          return false;
+        },
         child: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(

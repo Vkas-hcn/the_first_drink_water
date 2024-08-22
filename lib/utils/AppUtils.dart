@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -13,6 +14,9 @@ class AppUtils {
     final adManager = Provider.of<GgUtils>(context, listen: false);
     return adManager;
   }
+
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   static bool isNumeric(String s) {
     if (s.isEmpty) {
       return false;
@@ -151,7 +155,7 @@ class AppUtils {
 
     // 创建一个新的可变列表并添加现有数据
     List<WaterIntake> mutableList = List.from(jsonBean);
-  print("setWaterIntakeData=1====${mutableList.length}");
+    print("setWaterIntakeData=1====${mutableList.length}");
     // 添加新的水摄入数据到可变列表中
     mutableList.add(waterIntake);
     print("setWaterIntakeData=2====${mutableList.length}");
@@ -330,5 +334,96 @@ class AppUtils {
     } else {
       return bmiStats[state]!;
     }
+  }
+
+  static Future<void> showScanAd(
+    BuildContext context,
+    AdWhere adPosition,
+    Function() loadingFun,
+    Function() nextFun,
+  ) async {
+    final Completer<void> completer = Completer<void>();
+    var isCancelled = false;
+
+    void cancel() {
+      isCancelled = true;
+      completer.complete();
+    }
+
+    Future<void> _checkAndShowAd() async {
+      bool colckState = await GgUtils.blacklistBlocking();
+      if (colckState) {
+        nextFun();
+        return;
+      }
+      if (!getMobUtils(context).canShowAd(adPosition)) {
+        AppUtils.getMobUtils(context).loadAd(adPosition);
+      }
+
+      if (getMobUtils(context).canShowAd(adPosition)) {
+        loadingFun();
+        getMobUtils(context).showAd(context, adPosition, nextFun);
+        return;
+      }
+      if (!isCancelled) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        await _checkAndShowAd();
+      }
+    }
+
+    Future.delayed(const Duration(seconds: 4), cancel);
+    await Future.any([
+      _checkAndShowAd(),
+      completer.future,
+    ]);
+
+    if (!completer.isCompleted) {
+      return;
+    }
+    print("插屏广告展示超时");
+    nextFun();
+  }
+  static void loadingAd(GgUtils adManager){
+    adManager.loadAd(AdWhere.BACK);
+    adManager.loadAd(AdWhere.SAVE);
+    adManager.loadAd(AdWhere.Next);
+  }
+ static void backToNextPaper(
+    BuildContext context,
+    GgUtils adManager,
+    AdWhere adPosition,
+    Function() showLoadingFun,
+    Function() disShowLoadingFun,
+  ) async {
+    if (!adManager.canShowAd(adPosition)) {
+      adManager.loadAd(adPosition);
+    }
+    showLoadingFun();
+    AppUtils.showScanAd(context, adPosition, () {
+      disShowLoadingFun();
+    }, () {
+      disShowLoadingFun();
+      Navigator.pop(context);
+    });
+  }
+
+  static void goToNextPaper(
+      BuildContext context,
+      GgUtils adManager,
+      AdWhere adPosition,
+      Function() showLoadingFun,
+      Function() disShowLoadingFun,
+      Function() jumpFun,
+      ) async {
+    if (!adManager.canShowAd(adPosition)) {
+      adManager.loadAd(adPosition);
+    }
+    showLoadingFun();
+    AppUtils.showScanAd(context, adPosition, () {
+      disShowLoadingFun();
+    }, () {
+      disShowLoadingFun();
+      jumpFun();
+    });
   }
 }

@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 
+import 'gg/GgUtils.dart';
+import 'gg/LoadingOverlay.dart';
+
 class AddBmi extends StatelessWidget {
   const AddBmi({super.key});
 
@@ -27,6 +30,8 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
   final heightController = TextEditingController();
   final weightController = TextEditingController();
   final notesController = TextEditingController();
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
 
   @override
   void initState() {
@@ -40,6 +45,8 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
     weightController.addListener(showHeight);
     weightController.text = "60";
     notesController.addListener(showHeight);
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   void setUiData() {
@@ -68,6 +75,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
   void showHeight() async {
     heightController.text.trim();
   }
+
   void showNotesController() async {
     notesController.text.trim();
   }
@@ -76,8 +84,35 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
     weightController.text.trim();
   }
 
-  void backToNextPaper() {
-    Navigator.pop(context);
+  void backToNextPaper() async {
+    AppUtils.backToNextPaper(context, adManager, AdWhere.BACK, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    });
+  }
+
+  void saveToNextPaper() async {
+    if (!adManager.canShowAd(AdWhere.SAVE)) {
+      adManager.loadAd(AdWhere.SAVE);
+    }
+    setState(() {
+      _loadingOverlay.show(context);
+    });
+    AppUtils.showScanAd(context, AdWhere.SAVE, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+      Navigator.pop(context);
+    });
   }
 
   void deleteIntakeById(int timestamp) {
@@ -86,6 +121,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
       setUiData();
     });
   }
+
   void saveWaterData() {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     BmiBean bean = BmiBean(
@@ -94,20 +130,23 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
         remark: notesController.text,
         timestamp: timestamp);
     AppUtils.setBmiData(bean);
-
   }
-  void saveBmiNum(){
-    if(weightController.text.trim().isEmpty ||  heightController.text.trim().isEmpty){
+
+  void saveBmiNum() {
+    if (weightController.text.trim().isEmpty ||
+        heightController.text.trim().isEmpty) {
       AppUtils.showToast("Please enter a numeric value");
       return;
     }
-    if( num.tryParse(weightController.text)!<= 0 || num.tryParse(heightController.text)!<= 0 ){
+    if (num.tryParse(weightController.text)! <= 0 ||
+        num.tryParse(heightController.text)! <= 0) {
       AppUtils.showToast("Please enter a value greater than zero");
       return;
     }
     saveWaterData();
-    backToNextPaper();
+    saveToNextPaper();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,11 +230,11 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
                             maxLines: 1,
                             maxLength: 5,
                             buildCounter: (
-                                BuildContext context, {
-                                  required int currentLength,
-                                  required bool isFocused,
-                                  required int? maxLength,
-                                }) {
+                              BuildContext context, {
+                              required int currentLength,
+                              required bool isFocused,
+                              required int? maxLength,
+                            }) {
                               return null;
                             },
                             style: const TextStyle(
@@ -261,11 +300,11 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
                             maxLines: 1,
                             maxLength: 5,
                             buildCounter: (
-                                BuildContext context, {
-                                  required int currentLength,
-                                  required bool isFocused,
-                                  required int? maxLength,
-                                }) {
+                              BuildContext context, {
+                              required int currentLength,
+                              required bool isFocused,
+                              required int? maxLength,
+                            }) {
                               return null; // 隐藏文本计数
                             },
                             style: const TextStyle(
@@ -315,7 +354,8 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
                   padding: const EdgeInsets.only(top: 12, right: 20, left: 20),
                   child: Stack(alignment: Alignment.topRight, children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 20),
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage('assets/image/bg_bmi_item.webp'),
@@ -375,7 +415,9 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 100,)
+                SizedBox(
+                  height: 100,
+                )
               ],
             ),
           ),

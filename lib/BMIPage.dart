@@ -6,6 +6,9 @@ import 'package:the_first_drink_water/DetailBMI.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 
+import 'gg/GgUtils.dart';
+import 'gg/LoadingOverlay.dart';
+
 class BMIPage extends StatelessWidget {
   const BMIPage({super.key});
 
@@ -29,6 +32,8 @@ class _WelcomeScreenState extends State<BMIPageScreen> {
   late String target;
   int zongWater = 0;
   int result = 0;
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
 
   @override
   void initState() {
@@ -37,6 +42,8 @@ class _WelcomeScreenState extends State<BMIPageScreen> {
     setState(() {
       setUiData();
     });
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   void setUiData() {
@@ -64,21 +71,41 @@ class _WelcomeScreenState extends State<BMIPageScreen> {
   }
 
   void jumpToAddPaper() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AddBmi()),
-    ).then((value) {
+    AppUtils.goToNextPaper(context, adManager, AdWhere.Next, () {
       setState(() {
-        setUiData();
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AddBmi()),
+      ).then((value) {
+        setState(() {
+          setUiData();
+        });
       });
     });
   }
 
   void jumpToDetailPaper(BmiBean bean) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => DetailBMI(bean: bean)),
-    );
+    AppUtils.goToNextPaper(context, adManager, AdWhere.Next, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DetailBMI(bean: bean)),
+      );
+    });
   }
 
   void deleteIntakeById(int timestamp) {
@@ -311,8 +338,7 @@ class _WelcomeScreenState extends State<BMIPageScreen> {
                                                 Container(
                                                   width: 90,
                                                   padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 12),
+                                                      .symmetric(vertical: 12),
                                                   decoration: BoxDecoration(
                                                     color:
                                                         const Color(0xFFFFFDD9),
@@ -322,12 +348,13 @@ class _WelcomeScreenState extends State<BMIPageScreen> {
                                                   ),
                                                   child: Center(
                                                     child: Text(
-                                                      AppUtils.calculateBMIState(
-                                                          bmiBeanList[index]
-                                                              .height,
-                                                          bmiBeanList[index]
-                                                              .weight),
-                                                      style:  const TextStyle(
+                                                      AppUtils
+                                                          .calculateBMIState(
+                                                              bmiBeanList[index]
+                                                                  .height,
+                                                              bmiBeanList[index]
+                                                                  .weight),
+                                                      style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 16,
                                                       ),

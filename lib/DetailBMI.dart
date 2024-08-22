@@ -3,6 +3,9 @@ import 'package:the_first_drink_water/AddBmi.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 
+import 'gg/GgUtils.dart';
+import 'gg/LoadingOverlay.dart';
+
 class DetailBMI extends StatelessWidget {
   final BmiBean bean;
 
@@ -26,6 +29,8 @@ class DetailBMIScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<DetailBMIScreen> {
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
   @override
   void initState() {
     super.initState();
@@ -33,6 +38,8 @@ class _WelcomeScreenState extends State<DetailBMIScreen> {
     setState(() {
       setUiData();
     });
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   void setUiData() {}
@@ -42,8 +49,18 @@ class _WelcomeScreenState extends State<DetailBMIScreen> {
     super.dispose();
   }
 
-  void backToNextPaper() {
-    Navigator.pop(context);
+
+
+  void backToNextPaper() async {
+    AppUtils.backToNextPaper(context, adManager, AdWhere.BACK, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    });
   }
 
   void jumpToAddPaper() {

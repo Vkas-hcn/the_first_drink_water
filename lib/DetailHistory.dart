@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'bean/WaterIntake.dart';
+import 'gg/GgUtils.dart';
+import 'gg/LoadingOverlay.dart';
 
 class DetailHistory extends StatelessWidget {
   final String dateToday;
@@ -33,7 +35,8 @@ class _WelcomeScreenState extends State<TodayHistoryScreen> {
   late String target;
   int zongWater = 0;
   int result = 0;
-
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
   @override
   void initState() {
     super.initState();
@@ -41,6 +44,8 @@ class _WelcomeScreenState extends State<TodayHistoryScreen> {
     setState(() {
       setUiData();
     });
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   void setUiData() {
@@ -68,9 +73,7 @@ class _WelcomeScreenState extends State<TodayHistoryScreen> {
     super.dispose();
   }
 
-  void backToNextPaper() {
-    Navigator.pop(context);
-  }
+
 
   void deleteIntakeById(int timestamp) {
     AppUtils.deleteWaterIntakeData(timestamp);
@@ -78,7 +81,17 @@ class _WelcomeScreenState extends State<TodayHistoryScreen> {
       setUiData();
     });
   }
-
+  void backToNextPaper() async {
+    AppUtils.backToNextPaper(context, adManager, AdWhere.BACK, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

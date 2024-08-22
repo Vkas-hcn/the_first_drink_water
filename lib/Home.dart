@@ -10,6 +10,8 @@ import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
 import 'SavePaper.dart';
 import 'bean/WaterIntake.dart';
+import 'gg/GgUtils.dart';
+import 'gg/LoadingOverlay.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -35,6 +37,8 @@ class _WelcomeScreenState extends State<HomeScreen> {
   int days = 0;
   int avgIntake = 0;
   int result = 0;
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
 
   @override
   void initState() {
@@ -45,6 +49,8 @@ class _WelcomeScreenState extends State<HomeScreen> {
       updateDailyTarget();
       setUiData();
     });
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   @override
@@ -190,7 +196,8 @@ class _WelcomeScreenState extends State<HomeScreen> {
                                         print("点击item-${drinkNums[index]}");
                                         saveWaterData(drinkNums[index]);
                                         // 延迟1秒钟执行ResultApp
-                                        Future.delayed( Duration(milliseconds: 200), () {
+                                        Future.delayed(
+                                            Duration(milliseconds: 200), () {
                                           ResultApp(context, drinkNums[index]);
                                         });
                                       },
@@ -423,15 +430,39 @@ class _WelcomeScreenState extends State<HomeScreen> {
   }
 
   void jumpToStartPaper() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>  const SavePaper(),
-      ),
-    );
+    AppUtils.goToNextPaper(context, adManager, AdWhere.Next, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SavePaper(),
+        ),
+      );
+    });
   }
 
   void jumpToAllHistoryPaper() {
+    AppUtils.goToNextPaper(context, adManager, AdWhere.Next, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      goAllHistory();
+    });
+  }
+
+  void goAllHistory() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AllHistory()),
@@ -470,7 +501,7 @@ class _WelcomeScreenState extends State<HomeScreen> {
       avgIntake = 0;
     }
     final double toNumDouble = double.parse(toNum);
-    if(toNumDouble<=0){
+    if (toNumDouble <= 0) {
       result = 100;
       return;
     }
@@ -505,30 +536,52 @@ class _WelcomeScreenState extends State<HomeScreen> {
     });
     waterTodayIntakeList = AppUtils.getWaterIntakeData();
     for (var intake in waterTodayIntakeList) {
-      print('总数据----=ml: ${intake.ml}, time: ${intake.time}, date: ${intake.date}, target: ${intake.target}, timestamp: ${intake.timestamp}');
+      print(
+          '总数据----=ml: ${intake.ml}, time: ${intake.time}, date: ${intake.date}, target: ${intake.target}, timestamp: ${intake.timestamp}');
     }
   }
 
   void ResultApp(BuildContext context, String num) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Result(nums: num,result: result),
-      ),
-    );
+    AppUtils.goToNextPaper(context, adManager, AdWhere.Next, () {
+      setState(() {
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Result(nums: num, result: result),
+        ),
+      );
+    });
+
   }
 
   void jumpToTodayApp(BuildContext context) {
     String date = AppUtils.getNowDate();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => DetailHistory(
-                dateToday: date,
-              )),
-    ).then((value) {
+    AppUtils.goToNextPaper(context, adManager, AdWhere.Next, () {
       setState(() {
-        setUiData();
+        _loadingOverlay.show(context);
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DetailHistory(
+              dateToday: date,
+            )),
+      ).then((value) {
+        setState(() {
+          setUiData();
+        });
       });
     });
   }
@@ -545,7 +598,8 @@ class _WelcomeScreenState extends State<HomeScreen> {
             String inputValue = _controller.text;
             Navigator.of(context).pop();
             print("User input: $inputValue ml");
-            if (!AppUtils.isNumeric(inputValue) || num.tryParse(inputValue)!<= 0) {
+            if (!AppUtils.isNumeric(inputValue) ||
+                num.tryParse(inputValue)! <= 0) {
               AppUtils.showToast("Please enter legal numbers");
               return;
             }

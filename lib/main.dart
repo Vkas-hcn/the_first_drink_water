@@ -1,11 +1,19 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:the_first_drink_water/Guide.dart';
 import 'package:the_first_drink_water/StartPaper.dart';
+import 'package:the_first_drink_water/gg/Get2Data.dart';
+import 'package:the_first_drink_water/gg/GgUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalStorage().init();
+  // MobileAds.instance.initialize();
+  // Firebase.initializeApp();
+  //  LocalStorage().init();
   runApp(const MyApp());
 }
 
@@ -31,7 +39,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    print("object=================main");
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // final adUtils = Provider.of<Get2Data>(context, listen: false);
+      // Get2Data.initializeFqaId();
+      // adUtils.getBlackList(context);
       pageToHome();
     });
   }

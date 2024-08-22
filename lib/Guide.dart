@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
 
 import 'MainApp.dart';
 import 'StartPaper.dart';
+import 'gg/GgUtils.dart';
+import 'gg/LTFDW.dart';
 
 class Guide extends StatelessWidget {
   const Guide({super.key});
@@ -28,30 +31,66 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
+  bool restartState = false;
+  DateTime? _pausedTime;
+  late LTFDW Ltfdw;
+  late GgUtils adManager;
+
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
+    print("object=================");
     startProgress();
-    _controller.addListener(() {
-      if (_controller.isCompleted) {
+    adManager = AppUtils.getMobUtils(context);
+    Ltfdw = LTFDW(
+      onAppResumed: _handleAppResumed,
+      onAppPaused: _handleAppPaused,
+    );
+    WidgetsBinding.instance.addObserver(Ltfdw);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initAdData();
+    });
+  }
+  void initAdData() async {
+    adManager.loadAd(AdWhere.OPEN);
+    adManager.loadAd(AdWhere.SAVE);
+    adManager.loadAd(AdWhere.BACK);
+    Future.delayed(const Duration(seconds: 1), () {
+      showOpenAd();
+    });
+  }
+  void showOpenAd() {
+    int elapsed = 0;
+    const int timeout = 10000;
+    const int interval = 500;
+    print("准备展示open广告");
+    Timer.periodic(const Duration(milliseconds: interval), (timer) {
+      elapsed += interval;
+      if (adManager.canShowAd(AdWhere.OPEN)) {
+        adManager.showAd(context, AdWhere.OPEN, () {
+          pageToHome();
+        });
+        timer.cancel();
+      } else if (elapsed >= timeout) {
+        print("超时，直接进入首页");
         pageToHome();
+        timer.cancel();
       }
     });
   }
   void pageToHome() {
     String? stringValue =
-    LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String?;
+        LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String?;
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
             builder: (context) =>
-            ((stringValue!=null && stringValue.isNotEmpty) ?  MainApp() : const StartPaper())),
-            (route) => route == null);
+                ((stringValue != null && stringValue.isNotEmpty)
+                    ? MainApp()
+                    : const StartPaper())),
+        (route) => route == null);
   }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -72,6 +111,32 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   void _restartApp() {
     restartApp(context);
+  }
+
+  void _handleAppResumed() {
+    LocalStorage.isInBack = false;
+    print("应用恢复前台");
+    if (_pausedTime != null) {
+      final timeInBackground =
+          DateTime.now().difference(_pausedTime!).inSeconds;
+      if (LocalStorage.clone_ad == true) {
+        return;
+      }
+
+      print("应用恢复前台---${timeInBackground}===${LocalStorage.int_ad_show}");
+      if (timeInBackground > 3 && LocalStorage.int_ad_show == false) {
+        print("热启动");
+        restartState = true;
+        _restartApp();
+      }
+    }
+  }
+
+  void _handleAppPaused() {
+    LocalStorage.isInBack = true;
+    print("应用进入后台");
+    LocalStorage.clone_ad = false;
+    _pausedTime = DateTime.now();
   }
 
   @override

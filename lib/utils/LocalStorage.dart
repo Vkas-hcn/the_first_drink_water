@@ -8,6 +8,10 @@ class LocalStorage {
   static String drinkingWaterList = "drinkingWaterList";
   static String userBmiList = "userBmiList";
 
+  static String clockData = "clockData";
+  static bool isInBack = false;
+  static bool int_ad_show = false;
+  static bool clone_ad = false;
   static final LocalStorage _instance = LocalStorage._internal();
   late SharedPreferences _prefs;
 

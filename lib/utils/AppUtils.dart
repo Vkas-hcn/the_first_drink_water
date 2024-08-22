@@ -2,11 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
+import 'package:the_first_drink_water/gg/GgUtils.dart';
 import '../bean/WaterIntake.dart';
 import 'LocalStorage.dart';
 
 class AppUtils {
+  static GgUtils getMobUtils(BuildContext context) {
+    final adManager = Provider.of<GgUtils>(context, listen: false);
+    return adManager;
+  }
   static bool isNumeric(String s) {
     if (s.isEmpty) {
       return false;

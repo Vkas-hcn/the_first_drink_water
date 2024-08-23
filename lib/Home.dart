@@ -599,7 +599,8 @@ class _WelcomeScreenState extends State<HomeScreen> {
             Navigator.of(context).pop();
             print("User input: $inputValue ml");
             if (!AppUtils.isNumeric(inputValue) ||
-                num.tryParse(inputValue)! <= 0) {
+                num.tryParse(inputValue)! <= 0 ||
+                num.tryParse(inputValue)! > 6000) {
               AppUtils.showToast("Please enter legal numbers");
               return;
             }
@@ -754,6 +755,9 @@ class CustomDialog extends StatelessWidget {
                       child: TextField(
                         controller: controller,
                         keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly, // 仅允许输入数字
+                        ],
                       ),
                     ),
                     SizedBox(width: 10),

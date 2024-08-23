@@ -339,6 +339,7 @@ class AppUtils {
   static Future<void> showScanAd(
     BuildContext context,
     AdWhere adPosition,
+    int moreTime,
     Function() loadingFun,
     Function() nextFun,
   ) async {
@@ -371,7 +372,7 @@ class AppUtils {
       }
     }
 
-    Future.delayed(const Duration(seconds: 4), cancel);
+    Future.delayed( Duration(seconds: moreTime), cancel);
     await Future.any([
       _checkAndShowAd(),
       completer.future,
@@ -399,7 +400,7 @@ class AppUtils {
       adManager.loadAd(adPosition);
     }
     showLoadingFun();
-    AppUtils.showScanAd(context, adPosition, () {
+    AppUtils.showScanAd(context, adPosition,5, () {
       disShowLoadingFun();
     }, () {
       disShowLoadingFun();
@@ -419,7 +420,7 @@ class AppUtils {
       adManager.loadAd(adPosition);
     }
     showLoadingFun();
-    AppUtils.showScanAd(context, adPosition, () {
+    AppUtils.showScanAd(context, adPosition,10, () {
       disShowLoadingFun();
     }, () {
       disShowLoadingFun();

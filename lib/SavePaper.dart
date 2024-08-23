@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:the_first_drink_water/MainApp.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
@@ -49,17 +50,34 @@ class _SavePaperScreenState extends State<SavePaperScreen>
   void showCreteBut() async {
     netController.text.trim();
   }
-
+  void saveToNextPaper() async {
+    if (!adManager.canShowAd(AdWhere.SAVE)) {
+      adManager.loadAd(AdWhere.SAVE);
+    }
+    setState(() {
+      _loadingOverlay.show(context);
+    });
+    AppUtils.showScanAd(context, AdWhere.SAVE,5, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+      jumpToHome();
+    });
+  }
   void saveWaterGoalNum() {
     var goalNum = netController.text.trim();
     if (goalNum.isNotEmpty && AppUtils.isNumeric(goalNum)) {
       if (num.tryParse(goalNum)! > 6000 || num.tryParse(goalNum)! <=  0) {
-        AppUtils.showToast("The upper limit is 6000ml, the lower limit is 0ml");
+        AppUtils.showToast("The upper limit is 6000ml, the lower limit is 1ml");
         return;
       }
       LocalStorage()
           .setValue(LocalStorage.drinkingWaterGoal, netController.text.trim());
-      jumpToHome();
+      saveToNextPaper();
     } else {
       AppUtils.showToast("Please enter the amount of water you drink");
     }
@@ -139,6 +157,9 @@ class _SavePaperScreenState extends State<SavePaperScreen>
                         width: 80,
                         child: TextField(
                           keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly, // 仅允许输入数字
+                          ],
                           controller: netController,
                           decoration: const InputDecoration(
                             hintText: 'num',

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:the_first_drink_water/AddBmi.dart';
 import 'package:the_first_drink_water/DetailBMI.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
@@ -120,7 +121,7 @@ class _WelcomeScreenState extends State<BMIPageScreen> {
     return Scaffold(
       body: WillPopScope(
         onWillPop: () async {
-          backToNextPaper();
+          SystemNavigator.pop();
           return false;
         },
         child: Container(

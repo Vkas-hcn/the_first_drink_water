@@ -7,6 +7,9 @@ import 'package:the_first_drink_water/MainApp.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:the_first_drink_water/utils/LocalStorage.dart';
 
+import 'gg/GgUtils.dart';
+import 'gg/LoadingOverlay.dart';
+
 class StartPaper extends StatelessWidget {
   const StartPaper({super.key});
 
@@ -28,12 +31,15 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   final netController = TextEditingController();
-
+  final LoadingOverlay _loadingOverlay = LoadingOverlay();
+  late GgUtils adManager;
   @override
   void initState() {
     super.initState();
     netController.addListener(showCreteBut);
     netController.text = "1500";
+    adManager = AppUtils.getMobUtils(context);
+    AppUtils.loadingAd(adManager);
   }
 
   @override
@@ -45,17 +51,34 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   void showCreteBut() async {
     netController.text.trim();
   }
-
+  void saveToNextPaper() async {
+    if (!adManager.canShowAd(AdWhere.SAVE)) {
+      adManager.loadAd(AdWhere.SAVE);
+    }
+    setState(() {
+      _loadingOverlay.show(context);
+    });
+    AppUtils.showScanAd(context, AdWhere.SAVE,5, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+    }, () {
+      setState(() {
+        _loadingOverlay.hide();
+      });
+      jumpToHome();
+    });
+  }
   void saveWaterGoalNum() {
     var goalNum = netController.text.trim();
     if (goalNum.isNotEmpty && AppUtils.isNumeric(goalNum)) {
       if (num.tryParse(goalNum)! > 6000 || num.tryParse(goalNum)! <= 0) {
-        AppUtils.showToast("The upper limit is 6000ml, the lower limit is 0ml");
+        AppUtils.showToast("The upper limit is 6000ml, the lower limit is 1ml");
         return;
       }
       LocalStorage()
           .setValue(LocalStorage.drinkingWaterGoal, netController.text.trim());
-      jumpToHome();
+      saveToNextPaper();
     } else {
       AppUtils.showToast("Please enter the amount of water you drink");
     }
@@ -124,6 +147,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       SizedBox(
                         width: 80,
                         child: TextField(
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           keyboardType: TextInputType.number,
                           controller: netController,
                           decoration: const InputDecoration(

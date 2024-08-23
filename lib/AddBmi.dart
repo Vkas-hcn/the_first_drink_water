@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:the_first_drink_water/bean/BmiBean.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 
+import 'DetailBMI.dart';
+import 'Result.dart';
 import 'gg/GgUtils.dart';
 import 'gg/LoadingOverlay.dart';
 
@@ -32,6 +34,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
   final notesController = TextEditingController();
   final LoadingOverlay _loadingOverlay = LoadingOverlay();
   late GgUtils adManager;
+  late BmiBean bean;
 
   @override
   void initState() {
@@ -103,7 +106,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
     setState(() {
       _loadingOverlay.show(context);
     });
-    AppUtils.showScanAd(context, AdWhere.SAVE, () {
+    AppUtils.showScanAd(context, AdWhere.SAVE, 5, () {
       setState(() {
         _loadingOverlay.hide();
       });
@@ -111,8 +114,13 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
       setState(() {
         _loadingOverlay.hide();
       });
-      Navigator.pop(context);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => DetailBMI(bean: bean)),
+            (Route<dynamic> route) => route.isFirst,  // 只保留第一个路由，即 A
+      );
     });
+
   }
 
   void deleteIntakeById(int timestamp) {
@@ -124,7 +132,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
 
   void saveWaterData() {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
-    BmiBean bean = BmiBean(
+    bean = BmiBean(
         weight: weightController.text,
         height: heightController.text,
         remark: notesController.text,
@@ -168,7 +176,7 @@ class _WelcomeScreenState extends State<AddBmiScreen> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+                  padding: EdgeInsets.only(top: 40, left: 20, right: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,

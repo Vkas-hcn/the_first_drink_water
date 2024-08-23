@@ -11,21 +11,16 @@ class LTFDW extends WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        print("生命周期-resumed");
         onAppResumed();
         break;
       case AppLifecycleState.paused:
-        print("生命周期-paused");
         onAppPaused();
         break;
       case AppLifecycleState.inactive:
-        print("生命周期-inactive");
         break;
       case AppLifecycleState.detached:
-        print("生命周期-detached");
         break;
       case AppLifecycleState.hidden:
-        print("生命周期-hidden");
         break;
       default:
         break;

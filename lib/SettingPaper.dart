@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:the_first_drink_water/utils/AppUtils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -70,7 +71,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: () async {
+          SystemNavigator.pop();
+          return false;
+        },
         child: Column(
           children: [
             Stack(alignment: Alignment.topCenter, children: [
@@ -89,9 +93,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               padding: const EdgeInsets.only(
                   left: 20, right: 20, top: 12, bottom: 6),
               child: GestureDetector(
-                  onTap: () {
-                    Share.share("https://book.flutterchina.club/chapter6/keepalive.html#_6-8-1-automatickeepalive");
-                  },
+                onTap: () {
+                  Share.share(
+                      "https://book.flutterchina.club/chapter6/keepalive.html#_6-8-1-automatickeepalive");
+                },
                 child: Container(
                   height: 50,
                   decoration: BoxDecoration(
@@ -104,20 +109,20 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(15),
-                      child: Row(
-                        children: [
-                          const Text(
-                              'Share',
-                              style: TextStyle(
-                                color: Color(0xFF333333),
-                                fontSize: 14,
-                              ),
-                            ),
-                          const Spacer(),
-                          Image.asset(
-                              width: 20, height: 20, 'assets/image/ic_be.webp')
-                        ],
-                      ),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Share',
+                          style: TextStyle(
+                            color: Color(0xFF333333),
+                            fontSize: 14,
+                          ),
+                        ),
+                        const Spacer(),
+                        Image.asset(
+                            width: 20, height: 20, 'assets/image/ic_be.webp')
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -126,7 +131,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               padding:
                   const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
               child: GestureDetector(
-                onTap: (){
+                onTap: () {
                   launchComment();
                 },
                 child: Container(
@@ -163,7 +168,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               padding:
                   const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
               child: GestureDetector(
-                onTap: (){
+                onTap: () {
                   launchUserAgreement();
                 },
                 child: Container(
@@ -200,7 +205,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               padding:
                   const EdgeInsets.only(left: 20, right: 20, top: 6, bottom: 6),
               child: GestureDetector(
-                onTap: (){
+                onTap: () {
                   launchURL();
                 },
                 child: Container(
@@ -238,6 +243,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       ),
     );
   }
+
   void launchURL() async {
     //TODO: Replace with your own url
     const url = 'https://flutterchina.club/';
@@ -247,22 +253,27 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       AppUtils.showToast('Cant open web page $url');
     }
   }
+
   void launchComment() async {
-    const url = 'https://play.google.com/store/apps/details?id=com.blooming.unlimited.fast';
+    const url =
+        'https://play.google.com/store/apps/details?id=com.blooming.unlimited.fast';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       AppUtils.showToast('Cant open web page $url');
     }
   }
+
   void launchUserAgreement() async {
-    const url = 'https://play.google.com/store/apps/details?id=com.blooming.unlimited.fast';
+    const url =
+        'https://play.google.com/store/apps/details?id=com.blooming.unlimited.fast';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       AppUtils.showToast('Cant open web page $url');
     }
   }
+
   void restartApp(BuildContext context) {
     Navigator.of(context).removeRoute(ModalRoute.of(context) as Route);
     Navigator.pushAndRemoveUntil(

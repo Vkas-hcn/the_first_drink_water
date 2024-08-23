@@ -7,6 +7,7 @@ import 'gg/LoadingOverlay.dart';
 class Result extends StatefulWidget {
   final String nums;
   final int result;
+
   const Result({super.key, required this.nums, required this.result});
 
   @override
@@ -16,6 +17,7 @@ class Result extends StatefulWidget {
 class _ResultState extends State<Result> {
   final LoadingOverlay _loadingOverlay = LoadingOverlay();
   late GgUtils adManager;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +29,7 @@ class _ResultState extends State<Result> {
   void dispose() {
     super.dispose();
   }
+
   void backToNextPaper() async {
     AppUtils.backToNextPaper(context, adManager, AdWhere.BACK, () {
       setState(() {
@@ -38,14 +41,15 @@ class _ResultState extends State<Result> {
       });
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: WillPopScope(
-        onWillPop: ()  async {
-      backToNextPaper();
-      return false;
-      },
+        onWillPop: () async {
+          backToNextPaper();
+          return false;
+        },
         child: Column(
           children: [
             Padding(
@@ -99,8 +103,8 @@ class _ResultState extends State<Result> {
             ),
             Center(
               child: Text(
-                  "You’ve achieved ${widget.result}% of your goal,keep it up!",
-              style: const TextStyle(
+                "You’ve achieved ${widget.result}% of your goal,keep it up!",
+                style: const TextStyle(
                   color: Color(0xFFBABABA),
                   fontSize: 14,
                 ),

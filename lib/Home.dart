@@ -44,6 +44,8 @@ class _WelcomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
+    print("Home----initState");
+
     setState(() {
       toNum = LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String;
       updateDailyTarget();
@@ -54,8 +56,21 @@ class _WelcomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void deactivate() {
+    super.deactivate();
+    print("Home----deactivate");
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print("Home----didUpdateWidget");
+  }
+
+  @override
   void dispose() {
     super.dispose();
+    print("Home----dispose");
   }
 
   @override
@@ -444,7 +459,14 @@ class _WelcomeScreenState extends State<HomeScreen> {
         MaterialPageRoute(
           builder: (context) => const SavePaper(),
         ),
-      );
+      ).then((value) {
+        setState(() {
+          toNum =
+              LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String;
+          updateDailyTarget();
+          setUiData();
+        });
+      });
     });
   }
 
@@ -554,11 +576,16 @@ class _WelcomeScreenState extends State<HomeScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Result(nums: num, result: result),
-        ),
-      );
+            builder: (context) => Result(nums: num, result: result)),
+      ).then((value) {
+        setState(() {
+          toNum =
+              LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String;
+          updateDailyTarget();
+          setUiData();
+        });
+      });
     });
-
   }
 
   void jumpToTodayApp(BuildContext context) {
@@ -576,8 +603,8 @@ class _WelcomeScreenState extends State<HomeScreen> {
         context,
         MaterialPageRoute(
             builder: (context) => DetailHistory(
-              dateToday: date,
-            )),
+                  dateToday: date,
+                )),
       ).then((value) {
         setState(() {
           setUiData();

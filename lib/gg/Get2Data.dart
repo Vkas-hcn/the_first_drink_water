@@ -42,7 +42,6 @@ class Get2Data with ChangeNotifier {
 
 
   Future<Map<String, dynamic>> cloakMapData(BuildContext context) async {
-
     return {
       "fusty": "com.daily.waterreminder.healthylife",
       "afford": "quagmire",

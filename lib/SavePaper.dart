@@ -32,11 +32,13 @@ class _SavePaperScreenState extends State<SavePaperScreen>
   final netController = TextEditingController();
   final LoadingOverlay _loadingOverlay = LoadingOverlay();
   late GgUtils adManager;
+
   @override
   void initState() {
     super.initState();
     netController.addListener(showCreteBut);
-    netController.text = LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String;
+    netController.text =
+        LocalStorage().getValue(LocalStorage.drinkingWaterGoal) as String;
     adManager = AppUtils.getMobUtils(context);
     AppUtils.loadingAd(adManager);
   }
@@ -50,6 +52,7 @@ class _SavePaperScreenState extends State<SavePaperScreen>
   void showCreteBut() async {
     netController.text.trim();
   }
+
   void saveToNextPaper() async {
     if (!adManager.canShowAd(AdWhere.SAVE)) {
       adManager.loadAd(AdWhere.SAVE);
@@ -57,7 +60,7 @@ class _SavePaperScreenState extends State<SavePaperScreen>
     setState(() {
       _loadingOverlay.show(context);
     });
-    AppUtils.showScanAd(context, AdWhere.SAVE,5, () {
+    AppUtils.showScanAd(context, AdWhere.SAVE, 5, () {
       setState(() {
         _loadingOverlay.hide();
       });
@@ -68,10 +71,12 @@ class _SavePaperScreenState extends State<SavePaperScreen>
       jumpToHome();
     });
   }
+
   void saveWaterGoalNum() {
+    FocusScope.of(context).unfocus();
     var goalNum = netController.text.trim();
     if (goalNum.isNotEmpty && AppUtils.isNumeric(goalNum)) {
-      if (num.tryParse(goalNum)! > 6000 || num.tryParse(goalNum)! <=  0) {
+      if (num.tryParse(goalNum)! > 6000 || num.tryParse(goalNum)! <= 0) {
         AppUtils.showToast("The upper limit is 6000ml, the lower limit is 1ml");
         return;
       }
@@ -84,11 +89,12 @@ class _SavePaperScreenState extends State<SavePaperScreen>
   }
 
   void jumpToHome() {
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => MainApp()),
-            (route) => route == null);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => MainApp()),
+    );
   }
+
   void backToNextPaper() async {
     AppUtils.backToNextPaper(context, adManager, AdWhere.BACK, () {
       setState(() {
@@ -100,96 +106,109 @@ class _SavePaperScreenState extends State<SavePaperScreen>
       });
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: WillPopScope(
-        onWillPop: ()  async {
+        onWillPop: () async {
           backToNextPaper();
           return false;
         },
-        child: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/image/bg_setting.webp'),
-              fit: BoxFit.fill,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/image/bg_setting.webp'),
+                fit: BoxFit.fill,
+              ),
             ),
-          ),
-          child: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 66),
-                child: Text(
-                  'Stay healthy by starting with water.',
-                  style: TextStyle(
-                    color: Color(0xFF262626),
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 40, left: 32, right: 32),
-                child: Text(
-                  'To help you stay at your best, please set your daily water intake goal',
-                  style: TextStyle(
-                    color: Color(0xFFB0B0B0),
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 112),
-                child: Text(
-                  'Today\'s goal',
-                  style: TextStyle(
-                    color: Color(0xFF47B96D),
-                    fontSize: 15,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 7),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 80,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly, // 仅允许输入数字
-                          ],
-                          controller: netController,
-                          decoration: const InputDecoration(
-                            hintText: 'num',
-                            hintStyle: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF666666),
-                            ),
-                            border: InputBorder.none,
-                          ),
-                          maxLines: 1,
-                          style: const TextStyle(
-                            fontSize: 30,
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 66),
+                        const Text(
+                          'Stay healthy by starting with water.',
+                          style: TextStyle(
                             color: Color(0xFF262626),
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 40),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 32.0),
+                          child: Text(
+                            'To help you stay at your best, please set your daily water intake goal',
+                            style: TextStyle(
+                              color: Color(0xFFB0B0B0),
+                              fontSize: 14,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                      ),
-                      const Text(
-                        'MI',
-                        style: TextStyle(
-                          color: Color(0xFFB0B0B0),
-                          fontSize: 14,
+                        const SizedBox(height: 112),
+                        const Text(
+                          'Today\'s goal',
+                          style: TextStyle(
+                            color: Color(0xFF47B96D),
+                            fontSize: 15,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 7),
+                        Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 80,
+                                child: TextField(
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    // 仅允许输入数字
+                                  ],
+                                  controller: netController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'num',
+                                    hintStyle: TextStyle(
+                                      fontSize: 14,
+                                      color: Color(0xFF666666),
+                                    ),
+                                    border: InputBorder.none,
+                                  ),
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    color: Color(0xFF262626),
+                                  ),
+                                ),
+                              ),
+                              const Text(
+                                'MI',
+                                style: TextStyle(
+                                  color: Color(0xFFB0B0B0),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 200),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 200),
-                child: GestureDetector(
+                GestureDetector(
                   onTap: () {
                     saveWaterGoalNum();
                   },
@@ -211,8 +230,9 @@ class _SavePaperScreenState extends State<SavePaperScreen>
                     ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),

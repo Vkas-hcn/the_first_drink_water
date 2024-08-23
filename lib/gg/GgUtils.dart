@@ -228,6 +228,6 @@ class GgUtils {
     if (data != "basaltic") {
       return true;
     }
-    return false;
+    return true;
   }
 }
